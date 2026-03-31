@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm run vercel-build",
+  "routes": [
+    {
+      "src": "/admin(/.*)?",
+      "dest": "/webquanlisv/backend/dist/vercel.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/qlsv-fixed/dist/vercel.js"
+    }
+  ]
+}
+

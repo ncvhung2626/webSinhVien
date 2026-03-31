@@ -5,7 +5,11 @@
   "scripts": {
     "start:qlsv": "cd qlsv-fixed && npm run start:dev",
     "start:admin": "cd webquanlisv/backend && npm run start:dev",
-    "dev": "concurrently \"npm run start:qlsv\" \"npm run start:admin\""
+    "dev": "concurrently \"npm run start:qlsv\" \"npm run start:admin\"",
+    "build": "npm run build:qlsv && npm run build:admin",
+    "build:qlsv": "cd qlsv-fixed && npm run build",
+    "build:admin": "cd webquanlisv/backend && npm run build",
+    "vercel-build": "npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.0.0"

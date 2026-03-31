@@ -4,7 +4,7 @@ import { ValidationPipe }         from '@nestjs/common';
 import { join }                   from 'path';
 import { AppModule }              from './app.module';
 
-async function bootstrap() {
+export async function createApp() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // process.cwd() luôn trỏ về root project E:\qlsv-fixed
@@ -18,6 +18,12 @@ async function bootstrap() {
 
   app.enableCors({ origin: '*' });
 
+  await app.init();
+  return app;
+}
+
+async function bootstrap() {
+  const app = await createApp();
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`EduPortal QLSV đang chạy tại http://localhost:${port}`);
