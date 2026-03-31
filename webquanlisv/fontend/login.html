@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Đăng nhập - Hệ thống Quản trị</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-xl-5 col-lg-6 col-md-8">
+                <div class="card o-hidden border-0 shadow-lg">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Đăng Nhập Hệ Thống</h1>
+                                    </div>
+
+                                    <form class="user" id="loginForm">
+                                        <div class="form-group">
+                                            <input type="email" class="form-control form-control-user" id="email"
+                                                placeholder="Nhập địa chỉ Email / Tên đăng nhập...">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user" id="password"
+                                                placeholder="Mật khẩu">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck">
+                                                <label class="custom-control-label" for="customCheck">Nhớ mật khẩu</label>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="btn btn-primary btn-user btn-block" id="btnLogin">
+                                            Đăng Nhập
+                                        </button>
+                                    </form>
+
+                                    <hr>
+                                    <div class="text-center">
+                                        <a class="small" href="forgotpass.html">Quên mật khẩu?</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/js/sb-admin-2.min.js"></script>
+    <script src="js/config.js"></script>
+  <script>
+    $(document).ready(function () {
+        const API_URL = window.API_BASE_URL || 'http://localhost:3001';
+        // Lắng nghe sự kiện click
+        $('#btnLogin').click(function (e) {
+            e.preventDefault(); // 🔴 QUAN TRỌNG: Ngăn chặn form tự động reload lại trang
+
+            // 1. Lấy dữ liệu và DÙNG HÀM .trim() ĐỂ XÓA KHOẢNG TRẮNG THỪA NẾU LỠ GÕ NHẦM
+            const emailNhapVao = $('#email').val().trim();
+            const passwordNhapVao = $('#password').val().trim();
+
+            // In thử ra F12 xem có lấy đúng không
+            console.log("Chuẩn bị gửi:", emailNhapVao, passwordNhapVao);
+
+            if (!emailNhapVao || !passwordNhapVao) {
+                alert('Vui lòng nhập đầy đủ Email và Mật khẩu!');
+                return;
+            }
+
+            // 2. Gửi sang NestJS
+            fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: emailNhapVao,
+                    password: passwordNhapVao
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // 3. Xử lý kết quả trả về
+                    if (data.thanh_cong === true) {
+                        alert(data.thong_bao); // Hiện thông báo thành công
+
+                        // 🟢 ĐÃ THÊM: Cấp thẻ đăng nhập thành công
+                        localStorage.setItem('admin_da_dang_nhap', 'true');
+
+                        // 🔴 CHUYỂN HƯỚNG TỚI TRANG index2.html
+                        window.location.href = 'index2.html';
+                    } else {
+                        alert(data.thong_bao); // Hiện báo lỗi nếu sai
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi kĩ thuật:", error);
+                    alert('Lỗi: Mất kết nối với Backend NestJS!');
+                });
+        });
+    });
+</script>
+</html>
