@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        // Nếu không tìm thấy thẻ chứng nhận trong trình duyệt
+        if (localStorage.getItem('admin_da_dang_nhap') !== 'true') {
+            // Lập tức tống cổ về trang đăng nhập
+            window.location.href = 'login.html';
+        }
+    </script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>sinh viên vaa - Blank Page</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index2.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">VAA</div>
+            </a>
+
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item active">
+                <a class="nav-link" href="index2.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Trang chủ</span></a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">
+                Quản lý
+            </div>
+            <li class="nav-item">
+                <a class="nav-link" href="crud_sinhvien.html">
+                    <i class="fas fa-fw fa-user-graduate"></i>
+                    <span>Quản lý Sinh viên</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="crud_giangvien.html">
+                    <i class="fas fa-fw fa-chalkboard-teacher"></i>
+                    <span>Quản lý Giảng viên</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="crud_lophocphan.html">
+                    <i class="fas fa-fw fa-book"></i>
+                    <span>Quản lý Lớp học phần</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="crud_phancong.html">
+                    <i class="fas fa-fw fa-tasks"></i>
+                    <span>Phân công Giảng dạy</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="crud_sukien.html">
+                    <i class="fas fa-fw fa-calendar-alt"></i><span>Quản lý Sự kiện</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <li class="nav-item">
+                <a class="nav-link text-danger" href="#"
+                    onclick="localStorage.removeItem('admin_da_dang_nhap'); window.location.href='login.html'; return false;">
+                    <i class="fas fa-fw fa-sign-out-alt text-danger"></i>
+                    <span class="font-weight-bold">Đăng xuất</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <form
+                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Tìm kiếm..."
+                                aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <ul class="navbar-nav ml-auto">
+
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                                aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small"
+                                            placeholder="Search for..." aria-label="Search"
+                                            aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header">Thông báo</h6>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-primary">
+                                            <i class="fas fa-file-alt text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">12/12/2023</div>
+                                        <span class="font-weight-bold">Báo cáo tháng mới đã sẵn sàng!</span>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item text-center small text-gray-500" href="#">Xem tất cả</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-envelope fa-fw"></i>
+                                <span class="badge badge-danger badge-counter">7</span>
+                            </a>
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="messagesDropdown">
+                                <h6 class="dropdown-header">Tin nhắn</h6>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                                            alt="...">
+                                        <div class="status-indicator bg-success"></div>
+                                    </div>
+                                    <div class="font-weight-bold">
+                                        <div class="text-truncate">Chào bạn, code này đã được tối ưu!</div>
+                                        <div class="small text-gray-500">User · 58m</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item text-center small text-gray-500" href="#">Xem tin nhắn</a>
+                            </div>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">quản trị viênd</span>
+                                <img class="img-profile rounded-circle"
+                                    src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i> Hồ sơ
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i> Cài đặt
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Đăng xuất
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+                <div class="container-fluid">
+                    <h1 class="h3 mb-4 text-gray-800">Dash board</h1>
+                    <div class="container-fluid">
+
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+                        </div>
+
+                        <style>
+                            .card-clickable {
+                                cursor: pointer;
+                                transition: transform .15s, box-shadow .15s;
+                            }
+
+                            .card-clickable:hover {
+                                transform: translateY(-3px);
+                                box-shadow: 0 6px 18px rgba(0, 0, 0, .15) !important;
+                            }
+
+                            .card-clickable .card-body::after {
+                                content: "→ Xem chi tiết";
+                                display: block;
+                                font-size: 11px;
+                                color: #b7b9cc;
+                                margin-top: 4px;
+                            }
+                        </style>
+
+                        <div class="row">
+                            <!-- SINH VIÊN → crud_sinhvien.html -->
+                            <div class="col-xl-3 col-md-6 mb-4" onclick="window.location.href='crud_sinhvien.html'"
+                                title="Nhấn để quản lý Sinh viên">
+                                <div class="card border-left-primary shadow h-100 py-2 card-clickable">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Tổng số Sinh viên</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="soSinhVien">0
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- GIẢNG VIÊN → crud_giangvien.html -->
+                            <div class="col-xl-3 col-md-6 mb-4" onclick="window.location.href='crud_giangvien.html'"
+                                title="Nhấn để quản lý Giảng viên">
+                                <div class="card border-left-success shadow h-100 py-2 card-clickable">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                    Tổng số Giảng viên</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="soGiangVien">0
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LỚP HỌC → crud_lophocphan.html -->
+                            <div class="col-xl-3 col-md-6 mb-4" onclick="window.location.href='crud_lophocphan.html'"
+                                title="Nhấn để quản lý Lớp học phần">
+                                <div class="card border-left-info shadow h-100 py-2 card-clickable">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                    Lớp học đang mở</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="soLopHoc">0
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-school fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SỰ KIỆN → crud_sukien.html -->
+                            <div class="col-xl-3 col-md-6 mb-4" onclick="window.location.href='crud_sukien.html'"
+                                title="Nhấn để quản lý Sự kiện">
+                                <div class="card border-left-warning shadow h-100 py-2 card-clickable">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                    Sự kiện đang diễn ra</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="soSuKien">0
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SHORTCUT: PHÂN CÔNG GIẢNG DẠY -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card border-left-primary shadow py-2">
+                                    <div class="card-body py-2">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    <i class="fas fa-tasks mr-1"></i> Phân công Giảng dạy
+                                                </div>
+                                                <div class="text-gray-600 small">→Xem chi tiết</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <a href="crud_phancong.html" class="btn btn-primary btn-sm px-3">
+                                                    <i class="fas fa-arrow-right mr-1"></i> Vào quản lý
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-xl-12 col-lg-12">
+                                <div class="card shadow mb-4">
+                                    <div
+                                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-primary"><i
+                                                class="fas fa-trophy text-warning"></i> Top 5 Sinh
+                                            Viên Điểm Rèn Luyện Cao Nhất</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Hạng</th>
+                                                        <th>Mã SV</th>
+                                                        <th>Họ và Tên</th>
+                                                        <th class="text-center">Tổng Điểm</th>
+                                                        <th>Xếp Loại</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="bangTopSinhVien">
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">Đang tải dữ liệu...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Website 2024</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Bạn muốn đăng xuất?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Chọn "Đăng xuất" bên dưới nếu bạn đã sẵn sàng kết thúc phiên làm việc.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                    <a class="btn btn-primary" href="#" id="btnDangXuat">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    // XỬ LÝ SỰ KIỆN ĐĂNG XUẤT
+    document.getElementById('btnDangXuat').addEventListener('click', function (e) {
+        e.preventDefault();
+        localStorage.removeItem('admin_da_dang_nhap');
+        window.location.href = 'login.html';
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // GỌI API LẤY DỮ LIỆU DASHBOARD
+        fetch('/api/admin/dashboard-stats')
+            .then(response => response.json())
+            .then(data => {
+                if (data.thanh_cong) {
+                    // ĐỔ SỐ LIỆU VÀO 4 THẺ THỐNG KÊ
+                    $('#soSinhVien').text(data.the_thong_ke.tong_sinh_vien);
+                    $('#soGiangVien').text(data.the_thong_ke.tong_giang_vien);
+                    $('#soLopHoc').text(data.the_thong_ke.tong_lop_hoc);
+                    $('#soSuKien').text(data.the_thong_ke.tong_su_kien);
+
+                    // XỬ LÝ DANH SÁCH TOP 5 SINH VIÊN RÈN LUYỆN
+                    let htmlTopSinhVien = '';
+
+                    if (!data.top_sinh_vien || data.top_sinh_vien.length === 0) {
+                        htmlTopSinhVien = '<tr><td colspan="5" class="text-center">Chưa có dữ liệu sinh viên</td></tr>';
+                    } else {
+                        data.top_sinh_vien.forEach((sv, index) => {
+                            htmlTopSinhVien += `
+                                <tr>
+                                    <td>#${index + 1}</td>
+                                    <td><b>${sv.mssv}</b></td>
+                                    <td>${sv.ho_ten}</td>
+                                    <td class="text-center"><span class="badge badge-success">${sv.tong_diem} đ</span></td>
+                                    <td>${sv.xep_loai}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+
+                    $('#bangTopSinhVien').html(htmlTopSinhVien);
+                } else {
+                    // NẾU BACKEND LỖI -> IN THẲNG LỖI ĐỎ RA MÀN HÌNH!
+                    let loiChiTiet = data.chi_tiet ? data.chi_tiet : data.thong_bao;
+                    $('#bangTopSinhVien').html(`<tr><td colspan="5" class="text-center text-danger"><b>LỖI BACKEND:</b> ${loiChiTiet}</td></tr>`);
+                }
+            })
+            .catch(error => {
+                $('#bangTopSinhVien').html(`<tr><td colspan="5" class="text-center text-danger"><b>LỖI KẾT NỐI:</b> Không thể gọi đến Backend (Cổng 3000)</td></tr>`);
+            });
+    });
+</script>
+</body>
+
+</html>

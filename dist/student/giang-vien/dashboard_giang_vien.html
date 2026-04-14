@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Giảng viên</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
+  :root {
+    --primary: #1a3a5c;
+    --accent: #e8a020;
+    --bg: #f0f4f8;
+    --sidebar-w: 260px;
+    --text: #1a2e44;
+    --muted: #6b7f96;
+    --border: #dde4ed;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: var(--sidebar-w); height: 100vh;
+    background: linear-gradient(180deg, #1a3a5c 0%, #0f2440 100%);
+    display: flex; flex-direction: column;
+    z-index: 100; transition: transform 0.3s;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+
+  .sidebar-brand {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-brand .icon {
+    width: 44px; height: 44px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 16px rgba(232,160,32,0.4);
+  }
+  .sidebar-brand .icon i { color: white; font-size: 20px; }
+  .sidebar-brand h2 { color: white; font-size: 14px; font-weight: 700; margin: 0; line-height: 1.4; }
+  .sidebar-brand p { color: rgba(255,255,255,0.5); font-size: 11px; margin: 2px 0 0; }
+
+  .sidebar-user {
+    padding: 16px 24px;
+    background: rgba(255,255,255,0.05);
+    margin: 12px 16px;
+    border-radius: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar {
+    width: 38px; height: 38px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 15px;
+    flex-shrink: 0;
+  }
+  .user-info .name { color: white; font-size: 13px; font-weight: 600; }
+  .user-info .role { color: rgba(255,255,255,0.5); font-size: 11px; }
+
+  .sidebar-nav { flex: 1; padding: 8px 16px; overflow-y: auto; }
+  .nav-section { color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 16px 8px 6px; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: rgba(255,255,255,0.65);
+    font-size: 13.5px; font-weight: 500;
+    cursor: pointer; margin-bottom: 2px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+  .nav-item.active { background: rgba(232,160,32,0.2); color: var(--accent); font-weight: 600; }
+  .nav-item i { width: 18px; text-align: center; font-size: 15px; }
+
+  .sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .btn-logout {
+    width: 100%; padding: 11px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.6);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { background: rgba(255,100,100,0.15); color: #ff8080; border-color: rgba(255,100,100,0.3); }
+
+  /* Main content */
+  .main { margin-left: var(--sidebar-w); padding: 32px; min-height: 100vh; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .topbar h1 { font-size: 22px; font-weight: 800; color: var(--text); }
+  .topbar .date { color: var(--muted); font-size: 13px; }
+
+  /* Cards thống kê */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+
+  .stat-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 2px 12px rgba(26,58,92,0.06);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px;
+    transition: transform 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,58,92,0.1); }
+  .stat-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .stat-icon.blue { background: #e8f0fb; color: #1a3a5c; }
+  .stat-icon.orange { background: #fef3e2; color: #e8a020; }
+  .stat-icon.green { background: #e8f8f0; color: #1e8449; }
+  .stat-icon.red { background: #fdecea; color: #c0392b; }
+  .stat-info .value { font-size: 26px; font-weight: 800; color: var(--text); line-height: 1.2; }
+  .stat-info .label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Section chính */
+  .section-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(26,58,92,0.06);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-header h3 { font-size: 16px; font-weight: 700; color: var(--text); }
+  .btn-primary-sm {
+    padding: 8px 16px;
+    background: var(--primary);
+    color: white; border: none; border-radius: 9px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-primary-sm:hover { background: #2d5986; transform: translateY(-1px); }
+  .btn-accent-sm {
+    padding: 8px 16px;
+    background: var(--accent);
+    color: white; border: none; border-radius: 9px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 10px 14px; text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  td { padding: 13px 14px; font-size: 13.5px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(26,58,92,0.02); }
+
+  .badge-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px; font-weight: 600;
+    display: inline-block;
+  }
+  .badge-active { background: #e8f8f0; color: #1e8449; }
+  .badge-inactive { background: #fdecea; color: #c0392b; }
+
+  /* Page sections (ẩn/hiện) */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .main { margin-left: 0; }
+    .sidebar { transform: translateX(-100%); }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Modal QR */
+  .qr-container { text-align: center; padding: 20px; }
+  .qr-container img { max-width: 220px; border-radius: 12px; border: 4px solid var(--border); }
+  .qr-countdown { font-size: 28px; font-weight: 800; color: var(--accent); margin-top: 12px; }
+
+  .loading { text-align: center; padding: 40px; color: var(--muted); }
+  .loading i { font-size: 28px; animation: spin 1s linear infinite; display: block; margin-bottom: 10px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+    <h2>QLSV System</h2>
+    <p>Cổng Giảng viên</p>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="user-avatar" id="userAvatar">GV</div>
+    <div class="user-info">
+      <div class="name" id="userName">Giảng viên</div>
+      <div class="role">Giảng viên</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Tổng quan</div>
+    <a class="nav-item active" onclick="showPage('dashboard')">
+      <i class="fas fa-th-large"></i> Dashboard
+    </a>
+
+    <div class="nav-section">Giảng dạy</div>
+    <a class="nav-item" onclick="showPage('lop-hoc-phan')">
+      <i class="fas fa-book-open"></i> Lớp học phần
+    </a>
+    <a class="nav-item" onclick="showPage('diem-danh')">
+      <i class="fas fa-qrcode"></i> Điểm danh
+    </a>
+    <a class="nav-item" onclick="showPage('bai-tap')">
+      <i class="fas fa-tasks"></i> Bài tập
+    </a>
+
+    <div class="nav-section">Sinh viên</div>
+    <a class="nav-item" onclick="showPage('diem-hoc-phan')">
+      <i class="fas fa-chart-bar"></i> Điểm học phần
+    </a>
+    <a class="nav-item" onclick="showPage('diem-ren-luyen')">
+      <i class="fas fa-star"></i> Điểm rèn luyện
+    </a>
+    <a class="nav-item" onclick="showPage('thong-tin-sv')">
+      <i class="fas fa-users"></i> Thông tin sinh viên
+    </a>
+    <a class="nav-item" onclick="showPage('phieu-yeu-cau')">
+      <i class="fas fa-file-alt"></i> Phiếu yêu cầu
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="dangXuat()">
+      <i class="fas fa-sign-out-alt"></i> Đăng xuất
+    </button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="page-dashboard" class="page-section active">
+    <div class="topbar">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="date" id="currentDate"></div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-book-open"></i></div>
+        <div class="stat-info">
+          <div class="value" id="statLop">--</div>
+          <div class="label">Lớp học phần</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+          <div class="value" id="statSV">--</div>
+          <div class="label">Sinh viên</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-tasks"></i></div>
+        <div class="stat-info">
+          <div class="value" id="statBT">--</div>
+          <div class="label">Bài tập</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-user-times"></i></div>
+        <div class="stat-info">
+          <div class="value" id="statVang">--</div>
+          <div class="label">SV vắng hôm nay</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h3><i class="fas fa-book-open" style="color:var(--accent);margin-right:8px"></i>Lớp học phần của tôi</h3>
+        <button class="btn-primary-sm" onclick="showPage('lop-hoc-phan')">
+          <i class="fas fa-arrow-right"></i> Xem tất cả
+        </button>
+      </div>
+      <div id="dashboardLopList"><div class="loading"><i class="fas fa-spinner"></i>Đang tải...</div></div>
+    </div>
+  </div>
+
+  <!-- ===== LỚP HỌC PHẦN ===== -->
+  <div id="page-lop-hoc-phan" class="page-section">
+    <div class="topbar">
+      <h1>Lớp học phần</h1>
+    </div>
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Danh sách lớp</h3>
+      </div>
+      <div id="lopList"><div class="loading"><i class="fas fa-spinner"></i>Đang tải...</div></div>
+    </div>
+
+    <!-- Chi tiết lớp -->
+    <div id="chiTietLop" style="display:none">
+      <div class="section-card">
+        <div class="section-header">
+          <h3 id="tenLopChiTiet">Chi tiết lớp</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn-accent-sm" onclick="moModalQR()"><i class="fas fa-qrcode"></i> Tạo QR Điểm danh</button>
+            <button class="btn-primary-sm" onclick="document.getElementById('chiTietLop').style.display='none'"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px" id="thongKeLop"></div>
+
+        <h5 style="font-size:14px;font-weight:700;margin-bottom:12px">Thống kê buổi học</h5>
+        <div id="thongKeBuoiHoc"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <h3>Danh sách sinh viên</h3>
+        </div>
+        <div id="danhSachSV"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ĐIỂM DANH ===== -->
+  <div id="page-diem-danh" class="page-section">
+    <div class="topbar"><h1>Quản lý Điểm danh</h1></div>
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Tạo phiên điểm danh QR</h3>
+      </div>
+      <div style="max-width:500px">
+        <div class="mb-3">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Chọn buổi học</label>
+          <select id="selectBuoiHocDD" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px"></select>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Thời gian (phút)</label>
+          <input type="number" id="thoiGianPhut" value="15" min="5" max="60" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px">
+        </div>
+        <button class="btn-accent-sm" onclick="taoPhienQR()" style="padding:12px 24px;font-size:14px">
+          <i class="fas fa-qrcode"></i> Tạo mã QR
+        </button>
+      </div>
+      <div id="qrResult" style="margin-top:24px;display:none">
+        <div class="qr-container">
+          <img id="qrImg" src="" alt="QR Code">
+          <div class="qr-countdown" id="qrCountdown"></div>
+          <p style="color:var(--muted);font-size:13px;margin-top:8px">Sinh viên quét mã QR này để điểm danh</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Danh sách điểm danh buổi học</h3>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <select id="selectBuoiHocXem" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px;max-width:300px"></select>
+        <button class="btn-primary-sm" onclick="xemDiemDanh()"><i class="fas fa-eye"></i> Xem</button>
+      </div>
+      <div id="diemDanhList"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Thống kê vắng toàn lớp</h3>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <select id="selectLopVang" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px;max-width:300px"></select>
+        <button class="btn-primary-sm" onclick="loadThongKeVang()"><i class="fas fa-chart-bar"></i> Xem thống kê</button>
+      </div>
+      <div id="thongKeVangTable"></div>
+    </div>
+  </div>
+
+  <!-- ===== BÀI TẬP ===== -->
+  <div id="page-bai-tap" class="page-section">
+    <div class="topbar"><h1>Quản lý Bài tập</h1></div>
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Tạo bài tập mới</h3>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px">
+        <div>
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Lớp học phần</label>
+          <select id="btLopId" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px"></select>
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Tên bài tập</label>
+          <input id="btTen" type="text" class="form-control" placeholder="VD: Bài tập tuần 1" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px">
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Hạn nộp</label>
+          <input id="btHanNop" type="date" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px">
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Mô tả</label>
+          <input id="btMoTa" type="text" class="form-control" placeholder="Mô tả bài tập" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px">
+        </div>
+      </div>
+      <button class="btn-primary-sm" onclick="taoBaiTap()" style="margin-top:16px;padding:12px 24px;font-size:14px">
+        <i class="fas fa-plus"></i> Tạo bài tập
+      </button>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Danh sách bài tập</h3>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <select id="btXemLop" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px;max-width:300px"></select>
+        <button class="btn-primary-sm" onclick="xemBaiTap()"><i class="fas fa-eye"></i> Xem</button>
+      </div>
+      <div id="baiTapList"></div>
+    </div>
+  </div>
+
+  <!-- ===== THÔNG TIN SINH VIÊN ===== -->
+  <div id="page-thong-tin-sv" class="page-section">
+    <div class="topbar"><h1>Thông tin Sinh viên</h1></div>
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Danh sách sinh viên theo lớp</h3>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <select id="svXemLop" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px;max-width:300px"></select>
+        <button class="btn-primary-sm" onclick="xemSinhVien()"><i class="fas fa-eye"></i> Xem</button>
+      </div>
+      <div id="sinhVienList"></div>
+    </div>
+  </div>
+
+  <!-- ===== ĐIỂM RÈN LUYỆN ===== -->
+  <div id="page-diem-ren-luyen" class="page-section">
+    <div class="topbar"><h1>Điểm rèn luyện</h1></div>
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Điểm rèn luyện sinh viên</h3>
+        <button class="btn-primary-sm" onclick="taiDiemRL()"><i class="fas fa-sync"></i> Tải</button>
+      </div>
+      <div id="diemRLList"><div class="loading"><i class="fas fa-spinner"></i>Đang tải...</div></div>
+    </div>
+  </div>
+
+  <!-- ===== PHIẾU YÊU CẦU ===== -->
+  <div id="page-phieu-yeu-cau" class="page-section">
+    <div class="topbar"><h1>Phiếu yêu cầu sinh viên</h1></div>
+    <div class="section-card">
+      <div class="section-header">
+        <h3>Tất cả phiếu yêu cầu</h3>
+        <button class="btn-primary-sm" onclick="taiPhieuYC()"><i class="fas fa-sync"></i> Làm mới</button>
+      </div>
+      <div id="phieuYCList"><div class="loading"><i class="fas fa-spinner"></i>Đang tải...</div></div>
+    </div>
+  </div>
+
+  <!-- ===== ĐIỂM HỌC PHẦN ===== -->
+  <div id="page-diem-hoc-phan" class="page-section">
+    <div class="topbar"><h1>Điểm học phần</h1></div>
+    <div class="section-card">
+      <p style="color:var(--muted);font-size:14px">Chọn lớp để xem và quản lý điểm học phần:</p>
+      <div style="display:flex;gap:12px;margin:16px 0">
+        <select id="dhmXemLop" class="form-control" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px;max-width:300px"></select>
+        <button class="btn-primary-sm" onclick="xemDiemHP()"><i class="fas fa-eye"></i> Xem</button>
+      </div>
+      <div id="diemHPList"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal QR -->
+<div class="modal fade" id="modalQR" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:20px;border:none">
+      <div class="modal-header" style="border:none;padding:24px 24px 0">
+        <h5 class="modal-title" style="font-weight:700">Mã QR Điểm danh</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalQRBody"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  // Kiểm tra đăng nhập
+  if (!checkAuth('giang_vien')) {}
+
+  const hoTen = getHoTen();
+  document.getElementById('userName').textContent = hoTen;
+  document.getElementById('userAvatar').textContent = hoTen.charAt(0).toUpperCase();
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('vi-VN', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  let danhSachLop = [];
+  let currentLopId = null;
+
+  // Hiển thị trang
+  function showPage(page) {
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    event?.target?.closest('.nav-item')?.classList.add('active');
+  }
+
+  // Load dữ liệu ban đầu
+  async function init() {
+    const data = await apiFetch('/lop-hoc-phan/giang-vien');
+    danhSachLop = data || [];
+    document.getElementById('statLop').textContent = danhSachLop.length;
+
+    renderDashboardLop(danhSachLop);
+    renderLopList(danhSachLop);
+    populateLopSelects(danhSachLop);
+
+    taiDiemRL();
+    taiPhieuYC();
+  }
+
+  function renderDashboardLop(lops) {
+    const el = document.getElementById('dashboardLopList');
+    if (!lops.length) { el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có lớp học phần nào</p>'; return; }
+    el.innerHTML = `<table>
+      <tr><th>Mã lớp</th><th>Học phần</th><th>Học kỳ</th><th>Sĩ số tối đa</th><th></th></tr>
+      ${lops.map(l => `<tr>
+        <td><b>${l.ma_lop}</b></td>
+        <td>${l.hocPhan?.ten_hoc_phan || '---'}</td>
+        <td>${l.hoc_ky}</td>
+        <td>${l.si_so_toi_da}</td>
+        <td><button class="btn-primary-sm" onclick="xemChiTietLop(${l.id}, '${l.ma_lop}')"><i class="fas fa-eye"></i> Xem</button></td>
+      </tr>`).join('')}
+    </table>`;
+  }
+
+  function renderLopList(lops) {
+    const el = document.getElementById('lopList');
+    if (!lops.length) { el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có lớp học phần nào</p>'; return; }
+    el.innerHTML = `<table>
+      <tr><th>Mã lớp</th><th>Học phần</th><th>Học kỳ</th><th>Sĩ số tối đa</th><th></th></tr>
+      ${lops.map(l => `<tr>
+        <td><b>${l.ma_lop}</b></td>
+        <td>${l.hocPhan?.ten_hoc_phan || '---'}</td>
+        <td>${l.hoc_ky}</td>
+        <td>${l.si_so_toi_da}</td>
+        <td><button class="btn-primary-sm" onclick="xemChiTietLop(${l.id}, '${l.ma_lop}')"><i class="fas fa-eye"></i> Chi tiết</button></td>
+      </tr>`).join('')}
+    </table>`;
+  }
+
+  function populateLopSelects(lops) {
+    const ids = ['selectBuoiHocDD', 'selectBuoiHocXem', 'btLopId', 'btXemLop', 'svXemLop', 'dhmXemLop', 'selectLopVang'];
+    lops.forEach(l => {
+      ids.forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel) {
+          const opt = document.createElement('option');
+          opt.value = l.id;
+          opt.textContent = `${l.ma_lop} - ${l.hocPhan?.ten_hoc_phan || 'HP'}`;
+          sel.appendChild(opt);
+        }
+      });
+    });
+  }
+
+  async function xemChiTietLop(lopId, maLop) {
+    currentLopId = lopId;
+    document.getElementById('tenLopChiTiet').textContent = `Chi tiết lớp: ${maLop}`;
+    document.getElementById('chiTietLop').style.display = 'block';
+    showPage('lop-hoc-phan');
+
+    const [chiTiet, thongKe, svList] = await Promise.all([
+      apiFetch(`/lop-hoc-phan/${lopId}/chi-tiet`),
+      apiFetch(`/lop-hoc-phan/${lopId}/thong-ke`),
+      apiFetch(`/sinh-vien/lop/${lopId}`)
+    ]);
+
+    // Thống kê tổng
+    document.getElementById('thongKeLop').innerHTML = `
+      <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-info"><div class="value">${chiTiet?.tongSinhVien || 0}</div><div class="label">Sinh viên</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><i class="fas fa-calendar-check"></i></div><div class="stat-info"><div class="value">${thongKe?.length || 0}</div><div class="label">Buổi học</div></div></div>
+      <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-book"></i></div><div class="stat-info"><div class="value">${chiTiet?.lop?.hoc_ky || '---'}</div><div class="label">Học kỳ</div></div></div>
+    `;
+
+    // Thống kê buổi
+    document.getElementById('thongKeBuoiHoc').innerHTML = thongKe?.length ? `<table>
+      <tr><th>Ngày học</th><th>Trạng thái</th><th>Có mặt</th><th>Vắng</th><th></th></tr>
+      ${thongKe.map(b => `<tr>
+        <td>${formatDate(b.ngay_hoc)}</td>
+        <td><span class="badge-status ${b.trang_thai === 'hoc' ? 'badge-active' : 'badge-inactive'}">${b.trang_thai}</span></td>
+        <td style="color:#1e8449;font-weight:600">${b.so_co_mat}</td>
+        <td style="color:#c0392b;font-weight:600">${b.so_vang}</td>
+        <td><button class="btn-primary-sm" onclick="xemDiemDanhBuoi(${b.id})"><i class="fas fa-list"></i></button></td>
+      </tr>`).join('')}
+    </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có buổi học</p>';
+
+    // Danh sách SV
+    document.getElementById('danhSachSV').innerHTML = svList?.length ? `<table>
+      <tr><th>MSSV</th><th>Họ tên</th><th>Lớp</th><th>Email</th></tr>
+      ${svList.map(sv => `<tr>
+        <td>${sv.mssv}</td><td><b>${sv.ho_ten}</b></td><td>${sv.lop}</td><td>${sv.email}</td>
+      </tr>`).join('')}
+    </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có sinh viên</p>';
+  }
+
+  // Tạo phiên QR điểm danh
+  async function taoPhienQR() {
+    const buoiId = document.getElementById('selectBuoiHocDD').value;
+    const thoiGian = document.getElementById('thoiGianPhut').value;
+    if (!buoiId) { showToast('Vui lòng chọn buổi học', 'error'); return; }
+
+    const res = await apiFetch(`/lop-hoc-phan/buoi-hoc/${buoiId}/phien-diem-danh`, {
+      method: 'POST',
+      body: JSON.stringify({ thoi_gian_phut: parseInt(thoiGian) })
+    });
+
+    if (res?.qrImage) {
+      document.getElementById('qrImg').src = res.qrImage;
+      document.getElementById('qrResult').style.display = 'block';
+
+      // Đếm ngược
+      let remaining = parseInt(thoiGian) * 60;
+      const countdown = document.getElementById('qrCountdown');
+      const timer = setInterval(() => {
+        const m = Math.floor(remaining / 60), s = remaining % 60;
+        countdown.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+        if (--remaining < 0) { clearInterval(timer); countdown.textContent = 'Hết hạn'; }
+      }, 1000);
+      showToast('Tạo mã QR thành công!');
+    }
+  }
+
+  // Xem điểm danh buổi học
+  async function xemDiemDanh() {
+    const buoiId = document.getElementById('selectBuoiHocXem').value;
+    if (!buoiId) return;
+    const data = await apiFetch(`/diem-danh/buoi/${buoiId}`);
+    const el = document.getElementById('diemDanhList');
+    el.innerHTML = data?.length ? `<table>
+      <tr><th>MSSV</th><th>Họ tên</th><th>Lớp</th><th>Trạng thái</th><th>Thời gian</th><th>Hình thức</th></tr>
+      ${data.map(d => `<tr>
+        <td>${d.mssv}</td><td><b>${d.ho_ten}</b></td><td>${d.lop}</td>
+        <td><span class="badge-status ${d.trang_thai === 'co_mat' ? 'badge-active' : 'badge-inactive'}">${d.trang_thai === 'co_mat' ? 'Có mặt' : 'Vắng'}</span></td>
+        <td>${formatDateTime(d.thoi_gian)}</td>
+        <td>${d.hinh_thuc || '---'}</td>
+      </tr>`).join('')}
+    </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có dữ liệu</p>';
+  }
+
+  // Tạo bài tập
+  async function taoBaiTap() {
+    const body = {
+      lop_hoc_phan_id: parseInt(document.getElementById('btLopId').value),
+      ten_bai_tap: document.getElementById('btTen').value,
+      han_nop: document.getElementById('btHanNop').value,
+      mo_ta: document.getElementById('btMoTa').value,
+    };
+    if (!body.ten_bai_tap || !body.han_nop) { showToast('Vui lòng điền đầy đủ thông tin', 'error'); return; }
+    const res = await apiFetch('/bai-tap', { method: 'POST', body: JSON.stringify(body) });
+    if (res?.id) { showToast('Tạo bài tập thành công!'); xemBaiTap(); }
+  }
+
+  async function xemBaiTap() {
+    const lopId = document.getElementById('btXemLop').value;
+    const data = await apiFetch(`/bai-tap/lop/${lopId}`);
+    document.getElementById('baiTapList').innerHTML = data?.length ? `<table>
+      <tr><th>Tên bài tập</th><th>Mô tả</th><th>Hạn nộp</th><th>Ngày tạo</th><th></th></tr>
+      ${data.map(bt => `<tr>
+        <td><b>${bt.ten_bai_tap}</b></td><td>${bt.mo_ta||'-'}</td>
+        <td style="color:${new Date(bt.han_nop) < new Date() ? '#c0392b' : '#1e8449'};font-weight:600">${formatDate(bt.han_nop)}</td>
+        <td>${formatDate(bt.ngay_tao)}</td>
+        <td><button class="btn-primary-sm" onclick="xemDSNopBai(${bt.id},'${bt.ten_bai_tap}')"><i class="fas fa-list"></i> DS nộp</button></td>
+      </tr>
+      <tr><td colspan="5" style="padding:0 12px 8px"><div id="nopBai_${bt.id}"></div></td></tr>`).join('')}
+    </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có bài tập</p>';
+  }
+
+  async function xemSinhVien() {
+    const lopId = document.getElementById('svXemLop').value;
+    const data = await apiFetch(`/sinh-vien/lop/${lopId}`);
+    document.getElementById('sinhVienList').innerHTML = data?.length ? `<table>
+      <tr><th>MSSV</th><th>Họ tên</th><th>Lớp</th><th>Email</th></tr>
+      ${data.map(sv => `<tr>
+        <td>${sv.mssv}</td><td><b>${sv.ho_ten}</b></td><td>${sv.lop}</td><td>${sv.email}</td>
+      </tr>`).join('')}
+    </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có sinh viên</p>';
+  }
+
+  async function taiDiemRL() {
+    const data = await apiFetch('/diem-ren-luyen/tat-ca');
+    document.getElementById('diemRLList').innerHTML = data?.length ? `<table>
+      <tr><th>MSSV</th><th>Họ tên</th><th>Lớp</th><th>Học kỳ</th><th>Tổng điểm</th><th>Xếp loại</th></tr>
+      ${data.map(d => `<tr>
+        <td>${d.mssv}</td><td><b>${d.ho_ten}</b></td><td>${d.lop}</td><td>${d.hoc_ky}</td>
+        <td style="font-weight:700;font-size:16px">${d.tong_diem}</td>
+        <td><span class="badge-status ${d.tong_diem >= 80 ? 'badge-active' : 'badge-inactive'}">${d.xep_loai}</span></td>
+      </tr>`).join('')}
+    </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Không có dữ liệu</p>';
+  }
+
+  async function taiPhieuYC() {
+    const data = await apiFetch('/phieu-yeu-cau/tat-ca');
+    document.getElementById('phieuYCList').innerHTML = data?.length ? `<table>
+      <tr><th>MSSV</th><th>Họ tên</th><th>Loại yêu cầu</th><th>Nội dung</th><th>Trạng thái</th><th>Ngày tạo</th></tr>
+      ${data.map(p => `<tr>
+        <td>${p.mssv}</td><td><b>${p.ho_ten}</b></td>
+        <td>${p.loai_yeu_cau}</td><td>${p.noi_dung}</td>
+        <td><span class="badge-status ${p.trang_thai === 'da_xu_ly' ? 'badge-active' : 'badge-inactive'}">${p.trang_thai}</span></td>
+        <td>${formatDate(p.ngay_tao)}</td>
+      </tr>`).join('')}
+    </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Không có phiếu yêu cầu nào</p>';
+  }
+
+  async function loadThongKeVang() {
+    const lopId = document.getElementById('selectLopVang').value;
+    if (!lopId) return showToast('Chọn lớp trước', 'warning');
+    await xemThongKeVang(lopId);
+  }
+
+  async function xemDiemHP() {
+    const lopId = document.getElementById('dhmXemLop').value;
+    if (!lopId) return showToast('Chọn lớp trước', 'warning');
+    const data = await apiFetch(`/lop-hoc-phan/${lopId}/diem-hoc-phan`);
+    document.getElementById('diemHPList').innerHTML = data?.length ? `
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">
+        <i class="fas fa-info-circle"></i> Điểm chuyên cần tính theo % buổi có mặt (thang 10)
+      </p>
+      <table>
+        <tr>
+          <th>MSSV</th><th>Họ tên</th><th>Lớp</th>
+          <th>Buổi học</th><th>Có mặt</th><th>Vắng</th>
+          <th>Điểm CC (10)</th><th>Bài tập</th><th>Đã nộp</th>
+        </tr>
+        ${data.map(sv => `<tr>
+          <td>${sv.mssv}</td>
+          <td><b>${sv.ho_ten}</b></td>
+          <td>${sv.lop}</td>
+          <td style="text-align:center">${sv.tong_buoi}</td>
+          <td style="text-align:center;color:#1e8449;font-weight:600">${sv.so_co_mat}</td>
+          <td style="text-align:center;color:#c0392b;font-weight:600">${sv.tong_buoi - sv.so_co_mat}</td>
+          <td style="text-align:center">
+            <span style="font-weight:700;font-size:16px;color:${parseFloat(sv.diem_chuyen_can)>=8?'#1e8449':parseFloat(sv.diem_chuyen_can)>=5?'#d68910':'#c0392b'}">${sv.diem_chuyen_can}</span>
+          </td>
+          <td style="text-align:center">${sv.tong_bai_tap}</td>
+          <td style="text-align:center">${sv.so_bai_da_nop}/${sv.tong_bai_tap}</td>
+        </tr>`).join('')}
+      </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có dữ liệu</p>';
+  }
+
+  // Xem DS nộp bài theo từng bài tập
+  async function xemDSNopBai(baiTapId, tenBaiTap) {
+    const data = await apiFetch(`/bai-tap/${baiTapId}/danh-sach-nop`);
+    const el = document.getElementById(`nopBai_${baiTapId}`);
+    if (el) {
+      el.innerHTML = data?.length ? `
+        <table style="margin-top:8px">
+          <tr><th>MSSV</th><th>Họ tên</th><th>Ngày nộp</th><th>Hạn nộp</th><th>Kết quả</th></tr>
+          ${data.map(n => `<tr>
+            <td>${n.mssv}</td><td><b>${n.ho_ten}</b></td>
+            <td>${n.ngay_nop ? formatDate(n.ngay_nop) : '-'}</td>
+            <td>${n.han_nop ? formatDate(n.han_nop) : '-'}</td>
+            <td><span style="color:${n.ket_qua==='dung_han'?'#1e8449':'#c0392b'};font-weight:600">${n.ket_qua==='dung_han'?'✅ Đúng hạn':'⚠️ Trễ hạn'}</span></td>
+          </tr>`).join('')}
+        </table>` : '<p style="color:var(--muted);padding:8px">Chưa có ai nộp</p>';
+    }
+  }
+
+  // Thống kê vắng toàn lớp
+  async function xemThongKeVang(lopId) {
+    const data = await apiFetch(`/diem-danh/thong-ke-vang/${lopId}`);
+    const el = document.getElementById('thongKeVangTable');
+    if (el) {
+      el.innerHTML = data?.length ? `
+        <table>
+          <tr><th>MSSV</th><th>Họ tên</th><th>Lớp</th><th>Tổng buổi</th><th>Có mặt</th><th>Vắng</th><th>% Có mặt</th></tr>
+          ${data.map(sv => {
+            const pct = sv.tong_buoi > 0 ? Math.round(sv.so_co_mat/sv.tong_buoi*100) : 0;
+            return `<tr>
+              <td>${sv.mssv}</td><td><b>${sv.ho_ten}</b></td><td>${sv.lop}</td>
+              <td style="text-align:center">${sv.tong_buoi}</td>
+              <td style="text-align:center;color:#1e8449;font-weight:600">${sv.so_co_mat}</td>
+              <td style="text-align:center;color:#c0392b;font-weight:600">${sv.so_vang}</td>
+              <td style="text-align:center">
+                <div style="background:#eee;border-radius:4px;height:8px;width:80px;display:inline-block;vertical-align:middle;margin-right:4px">
+                  <div style="background:${pct>=80?'#1e8449':'#c0392b'};height:8px;border-radius:4px;width:${pct}%"></div>
+                </div>
+                <b style="color:${pct>=80?'#1e8449':'#c0392b'}">${pct}%</b>
+              </td>
+            </tr>`;
+          }).join('')}
+        </table>` : '<p style="color:var(--muted);text-align:center;padding:20px">Chưa có dữ liệu</p>';
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>

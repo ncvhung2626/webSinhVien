@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng Nhập – EduPortal QLSV</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f4c81 0%, #065f46 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: #fff; border-radius: 24px;
+      width: 420px; max-width: 100%;
+      box-shadow: 0 24px 64px rgba(0,0,0,.25);
+      overflow: hidden;
+    }
+    .login-header {
+      background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+      padding: 36px 40px 28px; text-align: center;
+    }
+    .login-logo {
+      width: 64px; height: 64px; border-radius: 18px;
+      background: rgba(255,255,255,.2); margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+    }
+    .login-header h1 { color: #fff; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+    .login-header p  { color: rgba(255,255,255,.7); font-size: .875rem; }
+    .login-body { padding: 32px 40px 36px; }
+    .role-tabs {
+      display: flex; border: 1px solid #e2e8f0;
+      border-radius: 10px; overflow: hidden; margin-bottom: 24px;
+    }
+    .role-tab {
+      flex: 1; padding: 10px; text-align: center;
+      font-size: .875rem; font-weight: 600; cursor: pointer;
+      background: #f8fafc; color: #64748b;
+      border: none; transition: all .2s;
+    }
+    .role-tab.active { background: #0f4c81; color: #fff; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: .8rem; font-weight: 700; color: #64748b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    .form-input {
+      width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;
+      padding: 12px 16px; font-size: .9rem; font-family: inherit;
+      outline: none; transition: border-color .2s;
+    }
+    .form-input:focus { border-color: #0f4c81; box-shadow: 0 0 0 4px rgba(15,76,129,.08); }
+    .btn-primary {
+      width: 100%; background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+      color: #fff; border: none; border-radius: 12px; padding: 14px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: all .2s; font-family: inherit;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,76,129,.3); }
+    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+    .footer-link { text-align: center; margin-top: 18px; font-size: .8rem; color: #94a3b8; }
+
+    /* ── Modal ── */
+    @keyframes modalIn { from{opacity:0;transform:scale(.93)} to{opacity:1;transform:scale(1)} }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.55); z-index: 9999;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 20px; width: 420px; max-width: 95vw;
+      overflow: hidden; animation: modalIn .3s ease;
+    }
+    .modal-head {
+      background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+      color: #fff; padding: 22px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-head h5 { margin: 0; font-weight: 700; font-size: 1rem; }
+    .modal-body { padding: 28px; }
+    .pw-wrap { position: relative; }
+    .pw-toggle {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 1.1rem;
+    }
+    .alert-msg {
+      padding: 10px 14px; border-radius: 8px; font-size: .82rem;
+      font-weight: 500; margin-bottom: 16px; display: none;
+    }
+    .alert-msg.error   { display: block; background: #fee2e2; color: #991b1b; border-left: 3px solid #ef4444; }
+    .alert-msg.success { display: block; background: #d1fae5; color: #065f46; border-left: 3px solid #10b981; }
+    .btn-outline {
+      width: 100%; background: transparent; color: #64748b;
+      border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 11px;
+      font-size: .875rem; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all .2s; margin-top: 10px;
+    }
+    .btn-outline:hover { border-color: #0f4c81; color: #0f4c81; }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="login-header">
+    <div class="login-logo">📚</div>
+    <h1>EduPortal QLSV</h1>
+    <p>Hệ thống quản lý sinh viên</p>
+  </div>
+  <div class="login-body">
+    <div class="role-tabs">
+      <button class="role-tab active" id="tab-sv" onclick="switchRole('sv')">🎓 Sinh Viên</button>
+      <button class="role-tab"        id="tab-gv" onclick="switchRole('gv')">👨‍🏫 Giảng Viên</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="label-email">Email / MSSV</label>
+      <input type="text" class="form-input" id="input-email" placeholder="nguyenvana@student.edu.vn"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mật Khẩu</label>
+      <input type="password" class="form-input" id="input-pass" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Đăng Nhập</button>
+    <div style="text-align:center;margin-top:14px">
+      <a href="#" onclick="openForgot();return false;"
+        style="font-size:.82rem;color:#64748b;text-decoration:none;font-weight:500">
+        🔑 Quên mật khẩu?
+      </a>
+    </div>
+    <div style="text-align:center;margin-top:10px">
+      <a href="/admin/login.html"
+        style="font-size:.82rem;color:#64748b;text-decoration:none;font-weight:500">
+        Đăng nhập Admin
+      </a>
+    </div>
+    <div class="footer-link">© 2025 EduPortal – Powered by NestJS + PostgreSQL</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL QUÊN MẬT KHẨU
+     Bước 1: Nhập email
+     Bước 2: Nhập mật khẩu mới + xác nhận
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="forgot-overlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h5 id="forgot-title">🔑 Quên Mật Khẩu</h5>
+      <button onclick="closeForgot()" style="background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="alert-msg" id="forgot-alert"></div>
+
+      <!-- Bước 1: Email -->
+      <div id="forgot-step1">
+        <p style="font-size:.875rem;color:#64748b;margin-bottom:20px;line-height:1.6">
+          Nhập email tài khoản của bạn để tiến hành đặt lại mật khẩu.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="forgot-email" placeholder="example@gmail.com"
+            onkeydown="if(event.key==='Enter') submitStep1()"/>
+        </div>
+        <button class="btn-primary" id="btn-step1" onclick="submitStep1()">Tiếp Theo →</button>
+        <button class="btn-outline" onclick="closeForgot()">Hủy</button>
+      </div>
+
+      <!-- Bước 2: Mật khẩu mới -->
+      <div id="forgot-step2" style="display:none">
+        <p style="font-size:.875rem;color:#64748b;margin-bottom:6px;line-height:1.6">Đặt lại mật khẩu cho</p>
+        <p style="font-size:.9rem;font-weight:700;color:#0f4c81;margin-bottom:20px" id="forgot-email-display"></p>
+        <div class="form-group">
+          <label class="form-label">Mật Khẩu Mới</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="new-pw" placeholder="Tối thiểu 6 ký tự"
+              onkeydown="if(event.key==='Enter') submitStep2()"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('new-pw',this)">👁</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Xác Nhận Mật Khẩu</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="confirm-pw" placeholder="Nhập lại mật khẩu"
+              onkeydown="if(event.key==='Enter') submitStep2()"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('confirm-pw',this)">👁</button>
+          </div>
+        </div>
+        <button class="btn-primary" id="btn-step2" onclick="submitStep2()">Đặt Lại Mật Khẩu</button>
+        <button class="btn-outline" onclick="backToStep1()">← Quay lại</button>
+      </div>
+
+      <!-- Thành công -->
+      <div id="forgot-success" style="display:none;text-align:center;padding:10px 0 6px">
+        <div style="font-size:3.5rem;margin-bottom:14px">🎉</div>
+        <div style="font-weight:800;font-size:1.1rem;color:#065f46;margin-bottom:8px">Đặt lại mật khẩu thành công!</div>
+        <div style="font-size:.875rem;color:#64748b;margin-bottom:24px;line-height:1.6">
+          Mật khẩu của bạn đã được cập nhật.<br>Hãy đăng nhập với mật khẩu mới.
+        </div>
+        <button class="btn-primary" onclick="closeForgot()">Đăng Nhập Ngay →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentRole = 'sv';
+  let forgotEmail = '';
+
+  function switchRole(role) {
+    currentRole = role;
+    document.getElementById('tab-sv').className = 'role-tab' + (role==='sv' ? ' active' : '');
+    document.getElementById('tab-gv').className = 'role-tab' + (role==='gv' ? ' active' : '');
+    document.getElementById('label-email').textContent    = role==='sv' ? 'Email / MSSV' : 'Email Giảng Viên';
+    document.getElementById('input-email').placeholder   = role==='sv' ? 'nguyenvana@student.edu.vn' : 'tranminh@edu.vn';
+  }
+
+  /* ── Đăng nhập ── */
+  async function doLogin() {
+    const email = document.getElementById('input-email').value.trim();
+    const pass  = document.getElementById('input-pass').value;
+    if (!email || !pass) { alert('Vui lòng điền email và mật khẩu!'); return; }
+
+    const btn = document.querySelector('.btn-primary');
+    btn.textContent = 'Đang đăng nhập...'; btn.disabled = true;
+
+    try {
+      const res  = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, matKhau: pass }),
+      });
+      let data;
+      try { data = await res.json(); } catch(e) { throw new Error('Server lỗi, thử lại!'); }
+
+      if (!res.ok) {
+        alert(data.message || 'Email hoặc mật khẩu không đúng!');
+        btn.textContent = 'Đăng Nhập'; btn.disabled = false;
+        return;
+      }
+
+      localStorage.setItem('accessToken', data.accessToken || '');
+      localStorage.setItem('vaiTro',      data.vaiTro      || '');
+      localStorage.setItem('userId',      String(data.userId || ''));
+
+      const isGV = (data.vaiTro || '').toLowerCase().includes('giang');
+      if (isGV) {
+        try {
+          const gv = await fetch('/api/giang-vien/me/' + data.userId).then(r => r.json());
+          if (gv?.id) {
+            localStorage.setItem('giangVienId',    String(gv.id));
+            localStorage.setItem('giangVienHoTen', gv.hoTen || '');
+            localStorage.setItem('giangVienBoMon', gv.boMon || '');
+          }
+        } catch(e) {}
+        window.location.href = '/giang-vien';
+      } else {
+        try {
+          const sv = await fetch('/api/sinh-vien/me/' + data.userId).then(r => r.json());
+          if (sv?.id) {
+            localStorage.setItem('sinhVienId',    String(sv.id));
+            localStorage.setItem('sinhVienHoTen', sv.hoTen || '');
+            localStorage.setItem('sinhVienMssv',  sv.mssv  || '');
+            localStorage.setItem('sinhVienLop',   sv.lop   || '');
+          }
+        } catch(e) {}
+        window.location.href = '/sinh-vien';
+      }
+    } catch (err) {
+      alert('Lỗi: ' + err.message);
+      btn.textContent = 'Đăng Nhập'; btn.disabled = false;
+    }
+  }
+
+  /* ── Quên mật khẩu ── */
+  function openForgot() {
+    forgotEmail = '';
+    showAlert('');
+    document.getElementById('forgot-email').value  = '';
+    document.getElementById('new-pw').value        = '';
+    document.getElementById('confirm-pw').value    = '';
+    document.getElementById('forgot-step1').style.display   = 'block';
+    document.getElementById('forgot-step2').style.display   = 'none';
+    document.getElementById('forgot-success').style.display = 'none';
+    document.getElementById('forgot-title').textContent     = '🔑 Quên Mật Khẩu';
+    document.getElementById('btn-step1').textContent        = 'Tiếp Theo →';
+    document.getElementById('btn-step1').disabled           = false;
+    document.getElementById('forgot-overlay').classList.add('show');
+    setTimeout(() => document.getElementById('forgot-email').focus(), 300);
+  }
+
+  function closeForgot() {
+    document.getElementById('forgot-overlay').classList.remove('show');
+  }
+
+  function showAlert(msg, type = 'error') {
+    const el = document.getElementById('forgot-alert');
+    el.className = 'alert-msg' + (msg ? ' ' + type : '');
+    el.textContent = msg;
+  }
+
+  // Bước 1: kiểm tra email tồn tại
+  async function submitStep1() {
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) { showAlert('Vui lòng nhập địa chỉ email!'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert('Địa chỉ email không hợp lệ!'); return; }
+
+    const btn = document.getElementById('btn-step1');
+    btn.textContent = 'Đang kiểm tra...'; btn.disabled = true;
+    showAlert('');
+
+    try {
+      const res  = await fetch('/api/auth/quen-mat-khau/kiem-tra-email', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        showAlert(data.message || 'Email không tồn tại trong hệ thống!');
+        btn.textContent = 'Tiếp Theo →'; btn.disabled = false;
+        return;
+      }
+
+      forgotEmail = email;
+      document.getElementById('forgot-email-display').textContent = email;
+      document.getElementById('forgot-step1').style.display = 'none';
+      document.getElementById('forgot-step2').style.display = 'block';
+      document.getElementById('forgot-title').textContent   = '🔒 Mật Khẩu Mới';
+      showAlert('');
+      setTimeout(() => document.getElementById('new-pw').focus(), 200);
+
+    } catch(e) {
+      showAlert('Lỗi kết nối. Vui lòng thử lại!');
+      btn.textContent = 'Tiếp Theo →'; btn.disabled = false;
+    }
+  }
+
+  // Bước 2: đặt mật khẩu mới
+  async function submitStep2() {
+    const pw1 = document.getElementById('new-pw').value;
+    const pw2 = document.getElementById('confirm-pw').value;
+    showAlert('');
+
+    if (pw1.length < 6) { showAlert('Mật khẩu phải có ít nhất 6 ký tự!'); return; }
+    if (pw1 !== pw2)    { showAlert('Mật khẩu xác nhận không khớp!'); return; }
+
+    const btn = document.getElementById('btn-step2');
+    btn.textContent = 'Đang cập nhật...'; btn.disabled = true;
+
+    try {
+      const res  = await fetch('/api/auth/quen-mat-khau/dat-lai', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail, matKhauMoi: pw1 }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        showAlert(data.message || 'Không thể cập nhật mật khẩu. Thử lại!');
+        btn.textContent = 'Đặt Lại Mật Khẩu'; btn.disabled = false;
+        return;
+      }
+
+      document.getElementById('forgot-step2').style.display   = 'none';
+      document.getElementById('forgot-success').style.display = 'block';
+      document.getElementById('forgot-title').textContent     = '✅ Thành Công';
+      document.getElementById('input-email').value = forgotEmail;
+
+    } catch(e) {
+      showAlert('Lỗi kết nối. Vui lòng thử lại!');
+      btn.textContent = 'Đặt Lại Mật Khẩu'; btn.disabled = false;
+    }
+  }
+
+  function backToStep1() {
+    showAlert('');
+    document.getElementById('forgot-step2').style.display = 'none';
+    document.getElementById('forgot-step1').style.display = 'block';
+    document.getElementById('forgot-title').textContent   = '🔑 Quên Mật Khẩu';
+    document.getElementById('btn-step1').textContent      = 'Tiếp Theo →';
+    document.getElementById('btn-step1').disabled         = false;
+  }
+
+  function togglePw(inputId, btn) {
+    const el = document.getElementById(inputId);
+    el.type  = el.type === 'password' ? 'text' : 'password';
+    btn.textContent = el.type === 'password' ? '👁' : '🙈';
+  }
+
+  document.getElementById('forgot-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeForgot();
+  });
+</script>
+</body>
+</html>

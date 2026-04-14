@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cổng Giảng Viên – QLSV</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #065f46; --primary-light: #059669; --accent: #f59e0b;
+      --bg: #f0fdf8; --surface: #fff; --surface2: #ecfdf5;
+      --text: #1e293b; --text-muted: #64748b; --border: #d1fae5;
+      --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
+      --sidebar-w: 260px; --header-h: 64px; --radius: 14px;
+      --shadow: 0 2px 16px rgba(6,95,70,.10);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w);
+      background: var(--primary); display: flex; flex-direction: column; z-index: 100; transition: transform .3s;
+    }
+    .sidebar-brand { padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .sidebar-brand .logo-text { font-size: 1.25rem; font-weight: 800; color: #fff; }
+    .sidebar-brand .logo-sub  { font-size: .72rem; color: rgba(255,255,255,.6); margin-top: 2px; }
+    .sidebar-user { padding: 18px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.06); }
+    .sidebar-user .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .sidebar-user .uname { font-size: .88rem; font-weight: 600; color: #fff; }
+    .sidebar-user .uid   { font-size: .72rem; color: rgba(255,255,255,.5); }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 14px 0; }
+    .nav-section { padding: 6px 20px 4px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.35); }
+    .nav-item-link { display: flex; align-items: center; gap: 12px; padding: 10px 20px; color: rgba(255,255,255,.75); text-decoration: none; font-size: .875rem; font-weight: 500; border-left: 3px solid transparent; transition: all .2s; cursor: pointer; }
+    .nav-item-link i { font-size: 1.1rem; width: 20px; text-align: center; }
+    .nav-item-link:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .nav-item-link.active { background: rgba(255,255,255,.15); color: #fff; border-left-color: var(--accent); }
+    .main-header { position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: var(--header-h); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; z-index: 90; box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+    .header-title { font-size: 1rem; font-weight: 700; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .btn-notif { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--text-muted); position: relative; cursor: pointer; }
+    .notif-badge { position: absolute; top: -4px; right: -4px; background: var(--danger); color: #fff; font-size: .6rem; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .main-content { margin-left: var(--sidebar-w); margin-top: var(--header-h); padding: 28px; min-height: calc(100vh - var(--header-h)); }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    .card-stat { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 22px 24px; box-shadow: var(--shadow); transition: transform .2s; }
+    .card-stat:hover { transform: translateY(-2px); }
+    .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 14px; }
+    .stat-label { font-size: .8rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+    .stat-value { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+    .content-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+    .content-card-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .content-card-header h5 { font-size: .95rem; font-weight: 700; margin: 0; }
+    .content-card-body { padding: 20px 24px; }
+    .table-modern { width: 100%; border-collapse: collapse; }
+    .table-modern thead th { background: var(--surface2); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .table-modern tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    .table-modern tbody tr:last-child { border-bottom: none; }
+    .table-modern tbody tr:hover { background: var(--surface2); }
+    .table-modern tbody td { padding: 13px 16px; font-size: .875rem; vertical-align: middle; }
+    .badge-custom { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger  { background: #fee2e2; color: #991b1b; }
+    .badge-info    { background: #dbeafe; color: #1e40af; }
+    .badge-primary { background: #e0f2fe; color: #0369a1; }
+    .btn-primary-custom { background: var(--primary); color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: .875rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .btn-primary-custom:hover { background: var(--primary-light); transform: translateY(-1px); }
+    .btn-accent { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: .875rem; font-weight: 600; cursor: pointer; }
+    .btn-accent:hover { background: #d97706; }
+    .btn-outline-sm { background: transparent; border: 1px solid var(--border); border-radius: 7px; padding: 6px 14px; font-size: .8rem; font-weight: 600; cursor: pointer; color: var(--text); transition: all .2s; }
+    .btn-outline-sm:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger-sm { background: var(--danger); color: #fff; border: none; border-radius: 7px; padding: 6px 14px; font-size: .8rem; font-weight: 600; cursor: pointer; }
+    .section-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+    .section-sub   { font-size: .875rem; color: var(--text-muted); margin-bottom: 24px; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 9999; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 18px; width: 580px; max-width: 95vw; max-height: 90vh; overflow-y: auto; animation: modalIn .3s ease; }
+    @keyframes modalIn { from{opacity:0;transform:scale(.93)} to{opacity:1;transform:scale(1)} }
+    .modal-header-gv { background: var(--primary); color: #fff; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 18px 18px 0 0; position: sticky; top: 0; }
+    .modal-header-gv h5 { margin: 0; font-weight: 700; }
+    .modal-body-gv { padding: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: .8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+    .form-control-custom { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: .875rem; font-family: inherit; outline: none; transition: border-color .2s; }
+    .form-control-custom:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(6,95,70,.08); }
+    .file-upload-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all .2s; background: var(--surface2); }
+    .file-upload-zone:hover { border-color: var(--primary); background: #f0fdf4; }
+    .file-upload-zone.drag-over { border-color: var(--primary); background: #d1fae5; }
+    .file-preview { background: var(--surface2); border-radius: 8px; padding: 10px 14px; margin-top: 10px; display: flex; align-items: center; gap: 10px; font-size: .875rem; }
+    .qr-display { text-align: center; padding: 20px; }
+    .qr-countdown { font-size: 1.5rem; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono'; margin-top: 12px; }
+    .qr-session-info { background: var(--surface2); border-radius: 10px; padding: 14px; margin-top: 14px; text-align: left; }
+    .progress-thin { height: 6px; background: var(--surface2); border-radius: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 10px; transition: width .6s ease; }
+    .toast-container-custom { position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
+    .toast-item { background: #1e293b; color: #fff; padding: 13px 18px; border-radius: 10px; font-size: .875rem; font-weight: 500; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,.2); animation: toastIn .3s ease; max-width: 340px; }
+    @keyframes toastIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+    .toast-item.success { border-left: 4px solid var(--success); }
+    .toast-item.error   { border-left: 4px solid var(--danger); }
+    .toast-item.info    { border-left: 4px solid var(--accent); }
+    .pyc-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow); }
+    .pyc-card .pyc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .pyc-card .pyc-title { font-weight: 700; font-size: .95rem; }
+    .pyc-card .pyc-meta  { font-size: .78rem; color: var(--text-muted); margin-top: 4px; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-header { left: 0; }
+      .main-content { margin-left: 0; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-text">🎓 EduPortal</div>
+    <div class="logo-sub">Cổng Thông Tin Giảng Viên</div>
+  </div>
+  <div class="sidebar-user">
+    <div class="avatar" id="gv-avatar">TM</div>
+    <div>
+      <div class="uname" id="gv-name">TS. Trần Minh</div>
+      <div class="uid">Bộ môn CNTT</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Tổng quan</div>
+    <a class="nav-item-link active" onclick="showPage('dashboard',this)"><i class="bi bi-house-fill"></i> Dashboard</a>
+    <div class="nav-section">Quản lý lớp học</div>
+    <a class="nav-item-link" onclick="showPage('lop-hoc-phan',this)"><i class="bi bi-book-fill"></i> Lớp Học Phần</a>
+    <a class="nav-item-link" onclick="showPage('sinh-vien-dang-ky',this)"><i class="bi bi-people-fill"></i> SV Đăng Ký</a>
+    <a class="nav-item-link" onclick="showPage('diem-danh-qr',this)"><i class="bi bi-qr-code"></i> Tạo QR Điểm Danh</a>
+    <a class="nav-item-link" onclick="showPage('quan-ly-dd',this)"><i class="bi bi-clipboard-check-fill"></i> Quản Lý Điểm Danh</a>
+    <div class="nav-section">Bài tập & Đánh giá</div>
+    <a class="nav-item-link" onclick="showPage('bai-tap',this)"><i class="bi bi-file-earmark-plus-fill"></i> Quản Lý Bài Tập</a>
+    <a class="nav-item-link" onclick="showPage('nop-bai',this)"><i class="bi bi-inbox-fill"></i> Bài Tập Đã Nộp</a>
+    <div class="nav-section">Hoạt động & Yêu cầu</div>
+    <a class="nav-item-link" onclick="showPage('su-kien',this)"><i class="bi bi-calendar-event-fill"></i> Quản Lý Sự Kiện</a>
+    <a class="nav-item-link" onclick="showPage('phieu-yeu-cau',this)"><i class="bi bi-envelope-fill"></i> Phiếu Yêu Cầu</a>
+    <div class="nav-section">Tài khoản</div>
+    <a class="nav-item-link" onclick="showPage('thong-tin',this)"><i class="bi bi-person-fill"></i> Thông Tin Cá Nhân</a>
+    <a class="nav-item-link" style="color:#ff6b6b" onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> Đăng Xuất</a>
+  </nav>
+</aside>
+
+<header class="main-header">
+  <div class="d-flex align-items-center gap-3">
+    <button class="btn-outline-sm d-md-none" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+    <span class="header-title" id="header-title">Dashboard</span>
+  </div>
+  <div class="header-right">
+    <div class="btn-notif"><i class="bi bi-bell"></i><span class="notif-badge">2</span></div>
+    <span style="font-size:.85rem;font-weight:600;color:var(--text-muted)">HK2 2024–2025</span>
+  </div>
+</header>
+
+<main class="main-content">
+
+  <!-- DASHBOARD -->
+  <section class="page-section active" id="page-dashboard">
+    <div class="section-title">Xin chào, TS. Trần Minh 👋</div>
+    <p class="section-sub">Hôm nay là <span id="today-date"></span></p>
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3"><div class="card-stat"><div class="stat-icon" style="background:#d1fae5">📚</div><div class="stat-label">Lớp học phần</div><div class="stat-value" style="color:var(--primary)">4</div></div></div>
+      <div class="col-6 col-lg-3"><div class="card-stat"><div class="stat-icon" style="background:#dbeafe">👥</div><div class="stat-label">Tổng sinh viên</div><div class="stat-value" style="color:var(--info)">127</div></div></div>
+      <div class="col-6 col-lg-3"><div class="card-stat"><div class="stat-icon" style="background:#fef3c7">📝</div><div class="stat-label">Bài tập chờ chấm</div><div class="stat-value" style="color:var(--warning)" id="dash-bt-cho-cham">18</div></div></div>
+      <div class="col-6 col-lg-3"><div class="card-stat"><div class="stat-icon" style="background:#fee2e2">📋</div><div class="stat-label">Phiếu yêu cầu mới</div><div class="stat-value" style="color:var(--danger)" id="dash-pyc">3</div></div></div>
+    </div>
+    <div class="row g-3">
+      <div class="col-lg-7">
+        <div class="content-card">
+          <div class="content-card-header"><h5>📚 Lớp Học Phần Của Tôi</h5><button class="btn-primary-custom" style="padding:6px 14px;font-size:.8rem" onclick="showPage('lop-hoc-phan',null)">Quản lý</button></div>
+          <div class="content-card-body">
+            <table class="table-modern w-100">
+              <thead><tr><th>Tên học phần</th><th>Mã lớp</th><th>Sĩ số</th><th>Tiến độ</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Lập Trình Java</strong></td><td><code>LTJ01</code></td><td>35 SV</td><td><div class="progress-thin" style="width:120px"><div class="progress-fill" style="width:60%;background:var(--primary)"></div></div></td></tr>
+                <tr><td><strong>Lập Trình Java NC</strong></td><td><code>LTJ02</code></td><td>28 SV</td><td><div class="progress-thin" style="width:120px"><div class="progress-fill" style="width:45%;background:var(--info)"></div></div></td></tr>
+                <tr><td><strong>Kiến Trúc Phần Mềm</strong></td><td><code>KTP01</code></td><td>42 SV</td><td><div class="progress-thin" style="width:120px"><div class="progress-fill" style="width:75%;background:var(--success)"></div></div></td></tr>
+                <tr><td><strong>Nhập Môn CNPM</strong></td><td><code>CNPM01</code></td><td>22 SV</td><td><div class="progress-thin" style="width:120px"><div class="progress-fill" style="width:30%;background:var(--warning)"></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="content-card">
+          <div class="content-card-header"><h5>🕐 Hoạt Động Gần Đây</h5></div>
+          <div class="content-card-body" style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;gap:12px;align-items:flex-start"><span style="background:#d1fae5;padding:6px 8px;border-radius:8px">📋</span><div><div style="font-size:.875rem;font-weight:600">Điểm danh LTJ01 – Buổi 24</div><div style="font-size:.75rem;color:var(--text-muted)">24/03/2025 · 35/35 SV</div></div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><span style="background:#fef3c7;padding:6px 8px;border-radius:8px">📝</span><div><div style="font-size:.875rem;font-weight:600">Tạo bài tập: Chương 5 OOP</div><div style="font-size:.75rem;color:var(--text-muted)">23/03/2025</div></div></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><span style="background:#fee2e2;padding:6px 8px;border-radius:8px">📋</span><div><div style="font-size:.875rem;font-weight:600">3 phiếu yêu cầu mới từ SV</div><div style="font-size:.75rem;color:var(--text-muted)">22/03/2025</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LỚP HỌC PHẦN -->
+  <section class="page-section" id="page-lop-hoc-phan">
+    <div class="section-title">Quản Lý Lớp Học Phần</div>
+    <p class="section-sub">Danh sách lớp học phần được phân công giảng dạy</p>
+    <div class="content-card">
+      <div class="content-card-header"><h5>📋 Danh Sách Lớp</h5></div>
+      <div class="content-card-body">
+        <table class="table-modern w-100">
+          <thead><tr><th>Học Phần</th><th>Mã Lớp</th><th>Học Kỳ</th><th>Sĩ Số</th><th>Buổi Học</th><th>Thao Tác</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Lập Trình Java</strong></td><td><code>LTJ01</code></td><td>HK2 2024–2025</td><td><span class="badge-custom badge-info">35 SV</span></td><td>24/30</td>
+              <td><button class="btn-outline-sm me-1" onclick="viewSinhVienLop('LTJ01','Lập Trình Java')">👥 SV</button><button class="btn-primary-custom" style="padding:5px 12px;font-size:.78rem" onclick="taoQRDiemDanh('LTJ01','Lập Trình Java')">📱 QR</button></td></tr>
+            <tr><td><strong>Lập Trình Java NC</strong></td><td><code>LTJ02</code></td><td>HK2 2024–2025</td><td><span class="badge-custom badge-info">28 SV</span></td><td>14/30</td>
+              <td><button class="btn-outline-sm me-1" onclick="viewSinhVienLop('LTJ02','LT Java NC')">👥 SV</button><button class="btn-primary-custom" style="padding:5px 12px;font-size:.78rem" onclick="taoQRDiemDanh('LTJ02','LT Java NC')">📱 QR</button></td></tr>
+            <tr><td><strong>Kiến Trúc Phần Mềm</strong></td><td><code>KTP01</code></td><td>HK2 2024–2025</td><td><span class="badge-custom badge-info">42 SV</span></td><td>22/30</td>
+              <td><button class="btn-outline-sm me-1" onclick="viewSinhVienLop('KTP01','Kiến Trúc PM')">👥 SV</button><button class="btn-primary-custom" style="padding:5px 12px;font-size:.78rem" onclick="taoQRDiemDanh('KTP01','Kiến Trúc PM')">📱 QR</button></td></tr>
+            <tr><td><strong>Nhập Môn CNPM</strong></td><td><code>CNPM01</code></td><td>HK2 2024–2025</td><td><span class="badge-custom badge-info">22 SV</span></td><td>9/30</td>
+              <td><button class="btn-outline-sm me-1" onclick="viewSinhVienLop('CNPM01','Nhập Môn CNPM')">👥 SV</button><button class="btn-primary-custom" style="padding:5px 12px;font-size:.78rem" onclick="taoQRDiemDanh('CNPM01','Nhập Môn CNPM')">📱 QR</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SV ĐĂNG KÝ -->
+  <section class="page-section" id="page-sinh-vien-dang-ky">
+    <div class="section-title">Sinh Viên Đăng Ký Học Phần</div>
+    <p class="section-sub">Danh sách sinh viên đã đăng ký các lớp học phần</p>
+    <div class="content-card mb-4">
+      <div class="content-card-body">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-4">
+            <select class="form-select" id="filter-lop" onchange="filterSVDangKy()" style="border-radius:8px;border:1px solid var(--border)">
+              <option value="">Tất cả lớp</option>
+              <option value="LTJ01">LTJ01 – Lập Trình Java</option>
+              <option value="LTJ02">LTJ02 – LT Java NC</option>
+              <option value="KTP01">KTP01 – Kiến Trúc PM</option>
+              <option value="CNPM01">CNPM01 – Nhập Môn CNPM</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="search-sv-dk" placeholder="Tìm tên / MSSV..." style="border-radius:8px;border:1px solid var(--border)" oninput="filterSVDangKy()">
+          </div>
+          <div class="col-md-4 text-end">
+            <span style="font-size:.85rem;color:var(--text-muted)">Tổng: <strong id="total-sv-dk">8</strong> SV</span>
+            <button class="btn-outline-sm ms-2" onclick="exportCSV()"><i class="bi bi-download me-1"></i>Xuất CSV</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-header"><h5>👥 Danh Sách Sinh Viên</h5></div>
+      <div class="content-card-body">
+        <div class="table-responsive">
+          <table class="table-modern w-100">
+            <thead><tr><th>MSSV</th><th>Họ Tên</th><th>Lớp SV</th><th>Lớp HP</th><th>Học Phần</th><th>Ngày ĐK</th><th>Thanh Toán</th><th>DD%</th></tr></thead>
+            <tbody id="sv-dk-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TẠO QR ĐIỂM DANH -->
+  <section class="page-section" id="page-diem-danh-qr">
+    <div class="section-title">Tạo QR Điểm Danh</div>
+    <p class="section-sub">Tạo mã QR cho buổi học, sinh viên quét để điểm danh tự động.</p>
+    <div class="row g-3">
+      <div class="col-lg-5">
+        <div class="content-card">
+          <div class="content-card-header"><h5>⚙️ Cấu Hình Phiên</h5></div>
+          <div class="content-card-body">
+            <div class="form-group">
+              <label>Lớp Học Phần</label>
+              <select class="form-control-custom" id="qr-lop-hp">
+                <option value="">-- Đang tải lớp học phần... --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Buổi Học Số</label>
+              <input type="number" class="form-control-custom" id="qr-buoi" value="25" min="1" max="60"/>
+            </div>
+            <div class="form-group">
+              <label>Ngày Học</label>
+              <input type="date" class="form-control-custom" id="qr-ngay"/>
+            </div>
+            <div class="form-group">
+              <label>Thời Gian Hiệu Lực</label>
+              <select class="form-control-custom" id="qr-timeout">
+                <option value="5">5 phút</option>
+                <option value="10" selected>10 phút</option>
+                <option value="15">15 phút</option>
+                <option value="30">30 phút</option>
+              </select>
+            </div>
+            <button class="btn-primary-custom w-100 mt-2" onclick="generateQRCode()">
+              <i class="bi bi-qr-code me-2"></i>Tạo Mã QR Điểm Danh
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="content-card">
+          <div class="content-card-header">
+            <h5>📱 Mã QR Điểm Danh</h5>
+            <span class="badge-custom badge-warning" id="qr-status-label">Chưa tạo</span>
+          </div>
+          <div class="content-card-body qr-display" id="qr-display-area">
+            <div style="padding:40px 0;color:var(--text-muted)">
+              <i class="bi bi-qr-code" style="font-size:3.5rem"></i>
+              <p style="margin-top:12px;font-size:.875rem">Điền thông tin và nhấn "Tạo Mã QR" để bắt đầu phiên điểm danh</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUẢN LÝ ĐIỂM DANH -->
+  <section class="page-section" id="page-quan-ly-dd">
+    <div class="section-title">Quản Lý Điểm Danh</div>
+    <p class="section-sub">Xem và chỉnh sửa kết quả điểm danh của sinh viên</p>
+    <div class="content-card mb-4">
+      <div class="content-card-body">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-3"><select class="form-select" style="border-radius:8px;border:1px solid var(--border)" id="dd-filter-lop" onchange="filterDiemDanh()"><option value="">Tất cả lớp</option><option value="LTJ01">LTJ01</option><option value="LTJ02">LTJ02</option><option value="KTP01">KTP01</option></select></div>
+          <div class="col-md-3"><input type="date" class="form-control" style="border-radius:8px;border:1px solid var(--border)" id="dd-filter-date"/></div>
+          <div class="col-md-3"><select class="form-select" style="border-radius:8px;border:1px solid var(--border)" id="dd-filter-status" onchange="filterDiemDanh()"><option value="">Tất cả</option><option value="co-mat">Có mặt</option><option value="vang">Vắng mặt</option></select></div>
+          <div class="col-md-3 text-end"><button class="btn-outline-sm" onclick="showToast('Đang xuất báo cáo...','info')"><i class="bi bi-file-earmark-excel me-1"></i>Xuất báo cáo</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="content-card-header"><h5>📋 Kết Quả Điểm Danh</h5></div>
+      <div class="content-card-body">
+        <table class="table-modern w-100">
+          <thead><tr><th>MSSV</th><th>Sinh Viên</th><th>Lớp HP</th><th>Buổi</th><th>Ngày</th><th>Hình Thức</th><th>Trạng Thái</th><th>Thao Tác</th></tr></thead>
+          <tbody id="dd-manage-tbody">
+            <tr data-lop="LTJ01" data-status="co-mat"><td><code>SV001</code></td><td>Nguyễn Văn A</td><td>LTJ01</td><td>#24</td><td>24/03/2025</td><td><span class="badge-custom badge-info">QR Code</span></td><td><span class="badge-custom badge-success">Có mặt</span></td><td><button class="btn-outline-sm" onclick="toggleDiemDanh(this)">Đổi</button></td></tr>
+            <tr data-lop="LTJ01" data-status="vang"><td><code>SV002</code></td><td>Trần Thị B</td><td>LTJ01</td><td>#24</td><td>24/03/2025</td><td><span class="badge-custom badge-warning">Thủ công</span></td><td><span class="badge-custom badge-danger">Vắng mặt</span></td><td><button class="btn-outline-sm" onclick="toggleDiemDanh(this)">Đổi</button></td></tr>
+            <tr data-lop="KTP01" data-status="vang"><td><code>SV004</code></td><td>Phạm Thị D</td><td>KTP01</td><td>#22</td><td>23/03/2025</td><td><span class="badge-custom badge-info">QR Code</span></td><td><span class="badge-custom badge-danger">Vắng mặt</span></td><td><button class="btn-outline-sm" onclick="toggleDiemDanh(this)">Đổi</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUẢN LÝ BÀI TẬP -->
+  <section class="page-section" id="page-bai-tap">
+    <div class="section-title">Quản Lý Bài Tập</div>
+    <p class="section-sub">Tạo và theo dõi bài tập cho sinh viên</p>
+    <div class="d-flex justify-content-end mb-3">
+      <button class="btn-primary-custom" onclick="openModal('modal-tao-bai-tap')"><i class="bi bi-plus-lg me-1"></i>Tạo Bài Tập Mới</button>
+    </div>
+    <div class="content-card">
+      <div class="content-card-header"><h5>📝 Danh Sách Bài Tập</h5></div>
+      <div class="content-card-body">
+        <table class="table-modern w-100" id="bt-gv-table">
+          <thead><tr><th>Tên Bài Tập</th><th>Lớp HP</th><th>Đính kèm</th><th>Hạn Nộp</th><th>Đã Nộp</th><th>Chưa Nộp</th><th>Thao Tác</th></tr></thead>
+          <tbody id="bt-gv-tbody">
+            <tr><td><strong>Bài tập chương 5</strong></td><td><code>LTJ01</code></td><td>—</td><td><span style="color:var(--danger);font-weight:600">25/03/2025</span></td><td><span class="badge-custom badge-success">28/35</span></td><td><span class="badge-custom badge-danger">7</span></td><td><button class="btn-outline-sm me-1" onclick="showPage('nop-bai',null)">👁️ Xem</button><button class="btn-danger-sm" onclick="xoaBaiTap(this)">🗑️</button></td></tr>
+            <tr><td><strong>Lab 3 – SQL Query</strong></td><td><code>LTJ02</code></td><td>—</td><td>27/03/2025</td><td><span class="badge-custom badge-success">20/28</span></td><td><span class="badge-custom badge-warning">8</span></td><td><button class="btn-outline-sm me-1" onclick="showPage('nop-bai',null)">👁️ Xem</button><button class="btn-danger-sm" onclick="xoaBaiTap(this)">🗑️</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BÀI TẬP ĐÃ NỘP -->
+  <section class="page-section" id="page-nop-bai">
+    <div class="section-title">Bài Tập Đã Nộp</div>
+    <p class="section-sub">Xem và chấm điểm bài tập của sinh viên</p>
+    <div class="content-card">
+      <div class="content-card-header"><h5>📥 Danh Sách Bài Nộp</h5></div>
+      <div class="content-card-body">
+        <table class="table-modern w-100">
+          <thead><tr><th>Sinh Viên</th><th>MSSV</th><th>Bài Tập</th><th>Lớp HP</th><th>Ngày Nộp</th><th>File</th><th>Trạng Thái</th><th>Thao Tác</th></tr></thead>
+          <tbody id="nop-bai-tbody">
+            <tr>
+              <td><strong>Nguyễn Văn A</strong></td><td><code>SV001</code></td><td>Bài tập chương 5</td><td>LTJ01</td><td>24/03/2025</td>
+              <td><a href="#" style="font-size:.8rem;color:var(--primary)"><i class="bi bi-file-earmark-pdf me-1"></i>baitap.pdf</a></td>
+              <td><span class="badge-custom badge-warning">Chờ chấm</span></td>
+              <td><button class="btn-primary-custom" style="padding:5px 14px;font-size:.78rem" onclick="chamDiem(this)">✏️ Chấm</button></td>
+            </tr>
+            <tr>
+              <td><strong>Trần Thị B</strong></td><td><code>SV002</code></td><td>Bài tập chương 5</td><td>LTJ01</td><td>23/03/2025</td>
+              <td><a href="#" style="font-size:.8rem;color:var(--primary)"><i class="bi bi-file-earmark-word me-1"></i>baitap.docx</a></td>
+              <td><span class="badge-custom badge-success">Đã chấm – 8.5</span></td>
+              <td><button class="btn-outline-sm" onclick="chamDiem(this)">📝 Sửa</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SỰ KIỆN -->
+  <section class="page-section" id="page-su-kien">
+    <div class="section-title">Quản Lý Sự Kiện</div>
+    <p class="section-sub">Tạo và quản lý sự kiện ngoại khóa cộng điểm rèn luyện</p>
+    <div class="d-flex justify-content-end mb-3">
+      <button class="btn-primary-custom" onclick="openModal('modal-tao-su-kien')"><i class="bi bi-plus-lg me-1"></i>Tạo Sự Kiện Mới</button>
+    </div>
+    <div class="row g-3" id="sk-gv-list">
+      <div class="col-md-6"><div class="content-card" style="border-left:4px solid var(--accent)"><div class="content-card-body"><div class="d-flex justify-content-between align-items-start mb-2"><div style="font-weight:700">Ngày hội Hướng nghiệp 2025</div><span style="background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px">+5đ</span></div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px"><i class="bi bi-calendar3 me-1"></i>28/03/2025 · <i class="bi bi-geo-alt me-1"></i>Hội trường A</div><div class="d-flex align-items-center justify-content-between"><span class="badge-custom badge-warning">32 SV đăng ký</span><button class="btn-danger-sm" onclick="xoaSuKien(this)">Xóa</button></div></div></div></div>
+    </div>
+  </section>
+
+  <!-- PHIẾU YÊU CẦU -->
+  <section class="page-section" id="page-phieu-yeu-cau">
+    <div class="section-title">Phiếu Yêu Cầu Từ Sinh Viên</div>
+    <p class="section-sub">Xem và xử lý phiếu yêu cầu mà sinh viên đã gửi</p>
+    <div class="content-card mb-4">
+      <div class="content-card-body">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-3">
+            <select class="form-select" id="pyc-filter-status" onchange="filterPhieuYeuCau()" style="border-radius:8px;border:1px solid var(--border)">
+              <option value="">Tất cả trạng thái</option>
+              <option value="cho_xu_ly">Chờ xử lý</option>
+              <option value="dang_xu_ly">Đang xử lý</option>
+              <option value="da_xu_ly">Đã xử lý</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" id="pyc-filter-loai" onchange="filterPhieuYeuCau()" style="border-radius:8px;border:1px solid var(--border)">
+              <option value="">Tất cả loại</option>
+              <option value="xin_nghi">Xin nghỉ học</option>
+              <option value="phuc_khao">Phúc khảo</option>
+              <option value="giay_to">Giấy tờ</option>
+              <option value="khac">Khác</option>
+            </select>
+          </div>
+          <div class="col-md-6 text-end">
+            <span class="badge-custom badge-danger" style="font-size:.8rem;padding:6px 14px" id="pyc-count-badge">3 phiếu chờ xử lý</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="pyc-list">
+      <div class="pyc-card" data-status="cho_xu_ly" data-loai="xin_nghi">
+        <div class="pyc-header">
+          <div><div class="pyc-title">Xin nghỉ học ngày 25/03/2025</div><div class="pyc-meta"><i class="bi bi-person me-1"></i>Nguyễn Văn A (SV001) · <i class="bi bi-tag me-1"></i>Xin nghỉ học · <i class="bi bi-clock me-1"></i>24/03/2025</div></div>
+          <span class="badge-custom badge-warning">Chờ xử lý</span>
+        </div>
+        <p style="font-size:.875rem;color:var(--text-muted);margin:8px 0 14px">Em xin phép nghỉ học buổi học ngày 25/03 do bị ốm. Em kính mong thầy/cô chấp thuận.</p>
+        <div style="display:flex;gap:8px">
+          <button class="btn-primary-custom" style="padding:6px 16px;font-size:.8rem" onclick="xuLyPhieu(this,'dang_xu_ly')">Đang xử lý</button>
+          <button class="btn-accent" style="padding:6px 16px;font-size:.8rem" onclick="xuLyPhieu(this,'da_xu_ly')">✅ Đã xử lý</button>
+          <button class="btn-outline-sm" onclick="phanHoiPhieu(this)">💬 Phản hồi</button>
+        </div>
+      </div>
+      <div class="pyc-card" data-status="cho_xu_ly" data-loai="phuc_khao">
+        <div class="pyc-header">
+          <div><div class="pyc-title">Yêu cầu phúc khảo điểm bài Lab 2</div><div class="pyc-meta"><i class="bi bi-person me-1"></i>Trần Thị B (SV002) · <i class="bi bi-tag me-1"></i>Phúc khảo · <i class="bi bi-clock me-1"></i>23/03/2025</div></div>
+          <span class="badge-custom badge-warning">Chờ xử lý</span>
+        </div>
+        <p style="font-size:.875rem;color:var(--text-muted);margin:8px 0 14px">Em nhận thấy điểm bài Lab 2 của em bị thiếu so với bài làm thực tế. Em kính xin thầy/cô xem lại bài của em.</p>
+        <div style="display:flex;gap:8px">
+          <button class="btn-primary-custom" style="padding:6px 16px;font-size:.8rem" onclick="xuLyPhieu(this,'dang_xu_ly')">Đang xử lý</button>
+          <button class="btn-accent" style="padding:6px 16px;font-size:.8rem" onclick="xuLyPhieu(this,'da_xu_ly')">✅ Đã xử lý</button>
+          <button class="btn-outline-sm" onclick="phanHoiPhieu(this)">💬 Phản hồi</button>
+        </div>
+      </div>
+      <div class="pyc-card" data-status="cho_xu_ly" data-loai="giay_to">
+        <div class="pyc-header">
+          <div><div class="pyc-title">Xin giấy xác nhận sinh viên</div><div class="pyc-meta"><i class="bi bi-person me-1"></i>Lê Văn C (SV003) · <i class="bi bi-tag me-1"></i>Giấy tờ · <i class="bi bi-clock me-1"></i>22/03/2025</div></div>
+          <span class="badge-custom badge-warning">Chờ xử lý</span>
+        </div>
+        <p style="font-size:.875rem;color:var(--text-muted);margin:8px 0 14px">Em cần giấy xác nhận đang là sinh viên của trường để làm hồ sơ xin việc làm thêm.</p>
+        <div style="display:flex;gap:8px">
+          <button class="btn-primary-custom" style="padding:6px 16px;font-size:.8rem" onclick="xuLyPhieu(this,'dang_xu_ly')">Đang xử lý</button>
+          <button class="btn-accent" style="padding:6px 16px;font-size:.8rem" onclick="xuLyPhieu(this,'da_xu_ly')">✅ Đã xử lý</button>
+          <button class="btn-outline-sm" onclick="phanHoiPhieu(this)">💬 Phản hồi</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THÔNG TIN CÁ NHÂN -->
+  <section class="page-section" id="page-thong-tin">
+    <div class="section-title">Thông Tin Cá Nhân</div>
+    <p class="section-sub">Thông tin giảng viên trong hệ thống</p>
+    <div class="row g-3">
+      <div class="col-md-4"><div class="content-card text-center" style="padding:30px 20px"><div style="width:90px;height:90px;border-radius:50%;background:var(--primary);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:#fff">TM</div><div style="font-size:1.1rem;font-weight:800">TS. Trần Minh</div><div style="font-size:.85rem;color:var(--text-muted);margin-top:4px">Bộ môn CNTT</div><div class="mt-3"><span class="badge-custom badge-success">Đang giảng dạy</span></div></div></div>
+      <div class="col-md-8"><div class="content-card"><div class="content-card-header"><h5>📋 Thông Tin Chi Tiết</h5></div><div class="content-card-body"><div class="row g-3"><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">HỌ TÊN</label><div style="font-weight:600">TS. Trần Minh</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">BỘ MÔN</label><div style="font-weight:600">Công nghệ Thông tin</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">EMAIL</label><div style="font-weight:600"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="621610030c0f0b0c0a220706174c140c">[email&#160;protected]</a></div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">SĐT</label><div style="font-weight:600">0901 234 567</div></div></div></div></div></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL TẠO BÀI TẬP (có upload file đề bài) -->
+<div class="modal-overlay" id="modal-tao-bai-tap">
+  <div class="modal-box">
+    <div class="modal-header-gv">
+      <h5>📝 Tạo Bài Tập Mới</h5>
+      <button onclick="closeModal('modal-tao-bai-tap')" style="background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div class="modal-body-gv">
+      <div class="form-group">
+        <label>Tên Bài Tập</label>
+        <input type="text" class="form-control-custom" id="bt-ten" placeholder="VD: Bài tập chương 6 – Collections"/>
+      </div>
+      <div class="form-group">
+        <label>Lớp Học Phần</label>
+        <select class="form-control-custom" id="bt-lop">
+          <option value="LTJ01">LTJ01 – Lập Trình Java</option>
+          <option value="LTJ02">LTJ02 – LT Java NC</option>
+          <option value="KTP01">KTP01 – Kiến Trúc PM</option>
+          <option value="CNPM01">CNPM01 – Nhập Môn CNPM</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mô Tả Yêu Cầu</label>
+        <textarea class="form-control-custom" id="bt-mota" rows="3" placeholder="Mô tả yêu cầu, hướng dẫn làm bài..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Hạn Nộp</label>
+        <input type="date" class="form-control-custom" id="bt-han"/>
+      </div>
+      <div class="form-group">
+        <label>File Đề Bài (PDF, DOCX, Ảnh – tối đa 30MB)</label>
+        <div class="file-upload-zone" id="bt-upload-zone" onclick="document.getElementById('bt-file-input').click()" ondrop="handleFileDrop(event,'bt')" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
+          <i class="bi bi-cloud-upload" style="font-size:2rem;color:var(--primary)"></i>
+          <div style="margin-top:8px;font-size:.875rem;font-weight:600">Kéo thả file hoặc nhấn để chọn</div>
+          <div style="font-size:.75rem;color:var(--text-muted);margin-top:4px">Hỗ trợ: PDF, DOCX, DOC, PNG, JPG</div>
+        </div>
+        <input type="file" id="bt-file-input" style="display:none" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onchange="previewFile(this,'bt-file-preview','bt-upload-zone')"/>
+        <div id="bt-file-preview" style="display:none"></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+        <button class="btn-outline-sm" onclick="closeModal('modal-tao-bai-tap')">Hủy</button>
+        <button class="btn-primary-custom" onclick="saveBaiTap()">💾 Lưu Bài Tập</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TẠO SỰ KIỆN -->
+<div class="modal-overlay" id="modal-tao-su-kien">
+  <div class="modal-box">
+    <div class="modal-header-gv">
+      <h5>🎉 Tạo Sự Kiện Mới</h5>
+      <button onclick="closeModal('modal-tao-su-kien')" style="background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div class="modal-body-gv">
+      <div class="form-group"><label>Tên Sự Kiện</label><input type="text" class="form-control-custom" id="sk-ten" placeholder="VD: Workshop Clean Code 2025"/></div>
+      <div class="row g-3">
+        <div class="col-6 form-group"><label>Ngày Tổ Chức</label><input type="date" class="form-control-custom" id="sk-ngay"/></div>
+        <div class="col-6 form-group"><label>Điểm Cộng</label><input type="number" class="form-control-custom" id="sk-diem" value="5" min="1" max="20"/></div>
+      </div>
+      <div class="form-group"><label>Địa Điểm</label><input type="text" class="form-control-custom" id="sk-diachi" placeholder="VD: Hội trường B"/></div>
+      <div class="form-group"><label>Mô Tả</label><textarea class="form-control-custom" id="sk-mota" rows="3" placeholder="Mô tả chi tiết sự kiện..."></textarea></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+        <button class="btn-outline-sm" onclick="closeModal('modal-tao-su-kien')">Hủy</button>
+        <button class="btn-primary-custom" onclick="saveSuKien()">💾 Lưu Sự Kiện</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL XEM SV LỚP -->
+<div class="modal-overlay" id="modal-sv-lop">
+  <div class="modal-box" style="width:640px">
+    <div class="modal-header-gv">
+      <h5 id="modal-sv-lop-title">👥 Sinh Viên Lớp</h5>
+      <button onclick="closeModal('modal-sv-lop')" style="background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div class="modal-body-gv" style="max-height:420px;overflow-y:auto" id="modal-sv-lop-content"></div>
+  </div>
+</div>
+
+<!-- MODAL PHẢN HỒI PHIẾU -->
+<div class="modal-overlay" id="modal-phan-hoi">
+  <div class="modal-box" style="width:480px">
+    <div class="modal-header-gv">
+      <h5>💬 Phản Hồi Phiếu Yêu Cầu</h5>
+      <button onclick="closeModal('modal-phan-hoi')" style="background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div class="modal-body-gv">
+      <div class="form-group">
+        <label>Nội Dung Phản Hồi</label>
+        <textarea class="form-control-custom" id="phan-hoi-noi-dung" rows="5" placeholder="Nhập nội dung phản hồi cho sinh viên..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+        <button class="btn-outline-sm" onclick="closeModal('modal-phan-hoi')">Hủy</button>
+        <button class="btn-primary-custom" onclick="guiPhanHoi()">📤 Gửi Phản Hồi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container-custom" id="toast-container"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const dsSinhVienDangKy = [
+  { mssv:'SV001', ten:'Nguyễn Văn A', lop:'CNTT22A', lopHP:'LTJ01', monHoc:'Lập Trình Java',   ngayDK:'01/03/2025', thanhToan:true,  dd:92 },
+  { mssv:'SV002', ten:'Trần Thị B',   lop:'CNTT22B', lopHP:'LTJ01', monHoc:'Lập Trình Java',   ngayDK:'01/03/2025', thanhToan:true,  dd:85 },
+  { mssv:'SV003', ten:'Lê Văn C',     lop:'CNTT22A', lopHP:'LTJ01', monHoc:'Lập Trình Java',   ngayDK:'02/03/2025', thanhToan:true,  dd:78 },
+  { mssv:'SV004', ten:'Phạm Thị D',   lop:'CNTT22C', lopHP:'LTJ02', monHoc:'LT Java NC',        ngayDK:'01/03/2025', thanhToan:true,  dd:90 },
+  { mssv:'SV005', ten:'Hoàng Văn E',  lop:'CNTT22B', lopHP:'LTJ02', monHoc:'LT Java NC',        ngayDK:'03/03/2025', thanhToan:false, dd:60 },
+  { mssv:'SV006', ten:'Vũ Thị F',     lop:'CNTT22A', lopHP:'KTP01', monHoc:'Kiến Trúc PM',     ngayDK:'01/03/2025', thanhToan:true,  dd:95 },
+  { mssv:'SV007', ten:'Đặng Văn G',   lop:'CNTT22D', lopHP:'KTP01', monHoc:'Kiến Trúc PM',     ngayDK:'02/03/2025', thanhToan:true,  dd:88 },
+  { mssv:'SV008', ten:'Ngô Thị H',    lop:'CNTT22C', lopHP:'CNPM01',monHoc:'Nhập Môn CNPM',    ngayDK:'01/03/2025', thanhToan:true,  dd:72 },
+];
+
+let currentPhanHoiCard = null;
+
+function renderSVDangKy(data) {
+  document.getElementById('sv-dk-tbody').innerHTML = data.map(sv => `
+    <tr data-lop="${sv.lopHP}">
+      <td><code>${sv.mssv}</code></td>
+      <td><strong>${sv.ten}</strong></td>
+      <td>${sv.lop}</td>
+      <td><code>${sv.lopHP}</code></td>
+      <td>${sv.monHoc}</td>
+      <td>${sv.ngayDK}</td>
+      <td>${sv.thanhToan ? '<span class="badge-custom badge-success">Đã thanh toán</span>' : '<span class="badge-custom badge-danger">Chưa thanh toán</span>'}</td>
+      <td><span style="font-weight:700;color:${sv.dd>=80?'var(--success)':sv.dd>=60?'var(--warning)':'var(--danger)'}">${sv.dd}%</span></td>
+    </tr>`).join('');
+  document.getElementById('total-sv-dk').textContent = data.length;
+}
+
+function filterSVDangKy() {
+  const lop = document.getElementById('filter-lop').value;
+  const q   = document.getElementById('search-sv-dk').value.toLowerCase();
+  renderSVDangKy(dsSinhVienDangKy.filter(sv =>
+    (!lop || sv.lopHP === lop) &&
+    (sv.ten.toLowerCase().includes(q) || sv.mssv.toLowerCase().includes(q))
+  ));
+}
+
+function viewSinhVienLop(maLop, tenMon) {
+  const svList = dsSinhVienDangKy.filter(sv => sv.lopHP === maLop);
+  document.getElementById('modal-sv-lop-title').textContent = `👥 ${tenMon} (${maLop}) – ${svList.length} sinh viên`;
+  document.getElementById('modal-sv-lop-content').innerHTML = svList.length === 0
+    ? '<p style="color:var(--text-muted);text-align:center;padding:20px">Chưa có sinh viên đăng ký</p>'
+    : svList.map(sv => `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+        <div style="width:38px;height:38px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--primary);flex-shrink:0">${sv.ten.split(' ').pop()[0]}</div>
+        <div style="flex:1"><div style="font-size:.875rem;font-weight:600">${sv.ten}</div><div style="font-size:.75rem;color:var(--text-muted)">${sv.mssv} · ${sv.lop}</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.8rem;font-weight:700;color:${sv.dd>=80?'var(--success)':sv.dd>=60?'var(--warning)':'var(--danger)'}">DD: ${sv.dd}%</span>
+          ${sv.thanhToan ? '<span class="badge-custom badge-success" style="font-size:.68rem">Đã TT</span>' : '<span class="badge-custom badge-danger" style="font-size:.68rem">Chưa TT</span>'}
+        </div>
+      </div>`).join('');
+  openModal('modal-sv-lop');
+}
+
+let qrInterval = null;
+let currentPhienId = null;
+
+function taoQRDiemDanh(maLop, tenMon) {
+  const sel = document.getElementById('qr-lop-hp');
+  for (let o of sel.options) { if (o.text.includes(maLop)) { sel.value = o.value; break; } }
+  showPage('diem-danh-qr', null);
+  setTimeout(generateQRCode, 150);
+}
+
+async function generateQRCode() {
+  const lopVal  = document.getElementById('qr-lop-hp').value;
+  const lopText = document.getElementById('qr-lop-hp').selectedOptions[0].text;
+  const buoi    = document.getElementById('qr-buoi').value;
+  const ngay    = document.getElementById('qr-ngay').value || new Date().toISOString().split('T')[0];
+  const timeout = parseInt(document.getElementById('qr-timeout').value);
+
+  const area = document.getElementById('qr-display-area');
+  area.innerHTML = '<div style="padding:30px;color:var(--text-muted)"><i class="bi bi-hourglass-split" style="font-size:2rem"></i><p style="margin-top:10px">Đang tạo phiên điểm danh...</p></div>';
+
+  try {
+    const res   = await fetch('/api/diem-danh/phien', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ lopHocPhanId: parseInt(lopVal), thoiGianPhut: timeout }),
+    });
+    const phien = await res.json();
+
+    if (!res.ok || !phien.maQrSession) {
+      showToast('Lỗi tạo phiên: ' + (phien.message || 'Kiểm tra lại DB!'), 'error');
+      area.innerHTML = '<div style="padding:40px 0;color:var(--danger)"><i class="bi bi-exclamation-circle" style="font-size:2.5rem"></i><p style="margin-top:12px">Tạo phiên thất bại.</p></div>';
+      return;
+    }
+
+    currentPhienId = phien.id;
+
+    const qrPayload = JSON.stringify({
+      session: phien.maQrSession,
+      lopId:   lopVal,
+      buoiSo:  buoi,
+      ngay:    ngay,
+      expires: new Date(phien.thoiGianHetHan).getTime(),
+    });
+
+    const canvas = document.createElement('canvas');
+    QRCode.toCanvas(canvas, qrPayload, { width: 280, margin: 2 }, (err) => {
+      if (err) { showToast('Lỗi render QR: ' + err.message, 'error'); return; }
+
+      area.innerHTML = '';
+
+      const info = document.createElement('div');
+      info.className = 'qr-session-info mb-3';
+      info.innerHTML = `
+        <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Phiên điểm danh đang hoạt động</div>
+        <div style="font-size:.875rem"><strong>Lớp:</strong> ${lopText}</div>
+        <div style="font-size:.875rem"><strong>Buổi:</strong> #${buoi} &nbsp;·&nbsp; <strong>Ngày:</strong> ${ngay.split('-').reverse().join('/')}</div>
+        <div style="font-size:.75rem;margin-top:6px;font-family:'JetBrains Mono';color:var(--primary);word-break:break-all">Session: ${phien.maQrSession}</div>`;
+      area.appendChild(info);
+
+      canvas.style.cssText = 'border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.15);display:block;margin:0 auto';
+      area.appendChild(canvas);
+
+      const cd = document.createElement('div');
+      cd.className = 'qr-countdown';
+      cd.style.marginTop = '14px';
+      area.appendChild(cd);
+
+      const hint = document.createElement('p');
+      hint.style.cssText = 'font-size:.8rem;color:var(--text-muted);margin-top:6px';
+      hint.textContent = 'Sinh viên mở app điểm danh, bật camera và quét mã QR này';
+      area.appendChild(hint);
+
+      const btnStop = document.createElement('button');
+      btnStop.className = 'btn-danger-sm mt-3';
+      btnStop.innerHTML = '⛔ Kết Thúc Phiên';
+      btnStop.onclick = stopQRSession;
+      area.appendChild(btnStop);
+
+      document.getElementById('qr-status-label').textContent = 'Đang hoạt động';
+      document.getElementById('qr-status-label').className = 'badge-custom badge-success';
+
+      if (qrInterval) clearInterval(qrInterval);
+      let remaining = timeout * 60;
+      qrInterval = setInterval(() => {
+        remaining--;
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        cd.textContent = `⏱ ${m}:${s}`;
+        if (remaining <= 0) {
+          clearInterval(qrInterval);
+          cd.textContent = '⛔ Hết thời gian';
+          cd.style.color = 'var(--danger)';
+          document.getElementById('qr-status-label').textContent = 'Đã hết hạn';
+          document.getElementById('qr-status-label').className = 'badge-custom badge-danger';
+          if (currentPhienId) fetch(`/api/diem-danh/phien/${currentPhienId}/dong`, { method: 'PUT' });
+          showToast('Phiên điểm danh đã kết thúc!', 'info');
+        }
+      }, 1000);
+
+      showToast('Tạo mã QR thành công! Sinh viên quét để điểm danh.', 'success');
+    });
+
+  } catch (err) {
+    showToast('Lỗi kết nối server: ' + err.message, 'error');
+    area.innerHTML = '<div style="padding:40px 0;color:var(--danger)"><i class="bi bi-wifi-off" style="font-size:2.5rem"></i><p style="margin-top:12px">Không kết nối được server.</p></div>';
+  }
+}
+function stopQRSession() {
+  if (qrInterval) { clearInterval(qrInterval); qrInterval = null; }
+  document.getElementById('qr-display-area').innerHTML = `
+    <div style="padding:40px 0;color:var(--text-muted)">
+      <i class="bi bi-qr-code" style="font-size:3.5rem"></i>
+      <p style="margin-top:12px;font-size:.875rem">Phiên đã kết thúc. Tạo phiên mới để điểm danh.</p>
+    </div>`;
+  document.getElementById('qr-status-label').textContent = 'Đã kết thúc';
+  document.getElementById('qr-status-label').className = 'badge-custom badge-danger';
+  showToast('Đã kết thúc phiên điểm danh', 'info');
+}
+
+function toggleDiemDanh(btn) {
+  const row   = btn.closest('tr');
+  const badge = row.querySelector('td:nth-child(7) .badge-custom');
+  if (badge.classList.contains('badge-success')) {
+    badge.className = 'badge-custom badge-danger'; badge.textContent = 'Vắng mặt'; row.dataset.status = 'vang';
+  } else {
+    badge.className = 'badge-custom badge-success'; badge.textContent = 'Có mặt'; row.dataset.status = 'co-mat';
+  }
+  showToast('Cập nhật điểm danh thành công', 'success');
+}
+
+function filterDiemDanh() {
+  const lop = document.getElementById('dd-filter-lop').value;
+  const st  = document.getElementById('dd-filter-status').value;
+  document.querySelectorAll('#dd-manage-tbody tr').forEach(tr => {
+    tr.style.display = (!lop || tr.dataset.lop === lop) && (!st || tr.dataset.status === st) ? '' : 'none';
+  });
+}
+
+function previewFile(input, previewId, zoneId) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById(previewId);
+  const zone    = document.getElementById(zoneId);
+  const ext = file.name.split('.').pop().toLowerCase();
+  const icons = { pdf:'bi-file-earmark-pdf', doc:'bi-file-earmark-word', docx:'bi-file-earmark-word', png:'bi-file-earmark-image', jpg:'bi-file-earmark-image', jpeg:'bi-file-earmark-image' };
+  preview.style.display = 'flex';
+  preview.innerHTML = `
+    <div class="file-preview">
+      <i class="bi ${icons[ext]||'bi-file-earmark'}" style="font-size:1.4rem;color:var(--primary)"></i>
+      <div style="flex:1"><div style="font-weight:600;font-size:.875rem">${file.name}</div><div style="font-size:.75rem;color:var(--text-muted)">${(file.size/1024/1024).toFixed(2)} MB</div></div>
+      <button type="button" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem" onclick="clearFile('${input.id}','${previewId}','${zoneId}')">×</button>
+    </div>`;
+  zone.style.display = 'none';
+}
+
+function clearFile(inputId, previewId, zoneId) {
+  document.getElementById(inputId).value = '';
+  document.getElementById(previewId).style.display = 'none';
+  document.getElementById(zoneId).style.display = 'block';
+}
+
+function handleFileDrop(e, prefix) {
+  e.preventDefault();
+  document.getElementById(prefix + '-upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const input = document.getElementById(prefix + '-file-input');
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  previewFile(input, prefix + '-file-preview', prefix + '-upload-zone');
+}
+
+function saveBaiTap() {
+  const ten  = document.getElementById('bt-ten').value.trim();
+  const lop  = document.getElementById('bt-lop').value;
+  const han  = document.getElementById('bt-han').value;
+  const file = document.getElementById('bt-file-input').files[0];
+  if (!ten || !han) { showToast('Vui lòng điền đầy đủ tên bài tập và hạn nộp', 'error'); return; }
+  const fileTag = file ? `<a href="#" style="font-size:.78rem;color:var(--primary)"><i class="bi bi-file-earmark me-1"></i>${file.name}</a>` : '—';
+  const row = document.createElement('tr');
+  row.innerHTML = `<td><strong>${ten}</strong></td><td><code>${lop.split(' ')[0]}</code></td>
+    <td>${fileTag}</td>
+    <td>${han.split('-').reverse().join('/')}</td>
+    <td><span class="badge-custom badge-success">0/35</span></td>
+    <td><span class="badge-custom badge-warning">35</span></td>
+    <td><button class="btn-outline-sm me-1" onclick="showPage('nop-bai',null)">👁️ Xem</button><button class="btn-danger-sm" onclick="xoaBaiTap(this)">🗑️</button></td>`;
+  document.getElementById('bt-gv-tbody').prepend(row);
+  closeModal('modal-tao-bai-tap');
+  document.getElementById('bt-ten').value = '';
+  document.getElementById('bt-mota').value = '';
+  clearFile('bt-file-input','bt-file-preview','bt-upload-zone');
+  showToast('Tạo bài tập thành công!', 'success');
+}
+
+function xoaBaiTap(btn) {
+  if (confirm('Xóa bài tập này?')) { btn.closest('tr').remove(); showToast('Đã xóa bài tập', 'info'); }
+}
+
+function chamDiem(btn) {
+  const diem = prompt('Nhập điểm (0–10):', '8.5');
+  if (diem === null) return;
+  const d = parseFloat(diem);
+  if (isNaN(d) || d < 0 || d > 10) { showToast('Điểm không hợp lệ (0–10)', 'error'); return; }
+  const row = btn.closest('tr');
+  row.querySelector('.badge-custom').className = 'badge-custom badge-success';
+  row.querySelector('.badge-custom').textContent = `Đã chấm – ${d}`;
+  btn.textContent = '📝 Sửa'; btn.className = 'btn-outline-sm';
+  showToast(`Đã chấm điểm: ${d}/10`, 'success');
+}
+
+function saveSuKien() {
+  const ten  = document.getElementById('sk-ten').value.trim();
+  const ngay = document.getElementById('sk-ngay').value;
+  const diem = document.getElementById('sk-diem').value;
+  const dd   = document.getElementById('sk-diachi').value;
+  if (!ten || !ngay) { showToast('Vui lòng điền đầy đủ tên và ngày sự kiện', 'error'); return; }
+  const col = document.createElement('div');
+  col.className = 'col-md-6';
+  col.innerHTML = `<div class="content-card" style="border-left:4px solid var(--primary)"><div class="content-card-body">
+    <div class="d-flex justify-content-between align-items-start mb-2"><div style="font-weight:700">${ten}</div><span style="background:var(--primary);color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px">+${diem}đ</span></div>
+    <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px"><i class="bi bi-calendar3 me-1"></i>${ngay.split('-').reverse().join('/')} · <i class="bi bi-geo-alt me-1"></i>${dd||'Chưa xác định'}</div>
+    <div class="d-flex align-items-center justify-content-between"><span class="badge-custom badge-warning">0 SV đăng ký</span><button class="btn-danger-sm" onclick="xoaSuKien(this)">Xóa</button></div>
+  </div></div>`;
+  document.getElementById('sk-gv-list').prepend(col);
+  closeModal('modal-tao-su-kien');
+  showToast('Tạo sự kiện thành công!', 'success');
+}
+
+function xoaSuKien(btn) {
+  if (confirm('Xóa sự kiện này?')) { btn.closest('.col-md-6').remove(); showToast('Đã xóa sự kiện', 'info'); }
+}
+
+function filterPhieuYeuCau() {
+  const status = document.getElementById('pyc-filter-status').value;
+  const loai   = document.getElementById('pyc-filter-loai').value;
+  document.querySelectorAll('#pyc-list .pyc-card').forEach(card => {
+    const s = (!status || card.dataset.status === status);
+    const l = (!loai   || card.dataset.loai   === loai);
+    card.style.display = s && l ? '' : 'none';
+  });
+}
+
+function xuLyPhieu(btn, newStatus) {
+  const card   = btn.closest('.pyc-card');
+  const badge  = card.querySelector('.badge-custom');
+  const labels = { cho_xu_ly:'Chờ xử lý', dang_xu_ly:'Đang xử lý', da_xu_ly:'Đã xử lý' };
+  const classes = { cho_xu_ly:'badge-warning', dang_xu_ly:'badge-info', da_xu_ly:'badge-success' };
+  badge.className = `badge-custom ${classes[newStatus]}`;
+  badge.textContent = labels[newStatus];
+  card.dataset.status = newStatus;
+  if (newStatus === 'da_xu_ly') {
+    card.querySelectorAll('button').forEach(b => b.remove());
+    const doneDot = document.createElement('div');
+    doneDot.style.cssText = 'font-size:.8rem;color:var(--success);font-weight:600;margin-top:8px';
+    doneDot.innerHTML = '✅ Đã xử lý xong';
+    card.querySelector('p').after(doneDot);
+  }
+  const remaining = document.querySelectorAll('#pyc-list .pyc-card[data-status="cho_xu_ly"]').length;
+  document.getElementById('pyc-count-badge').textContent = remaining + ' phiếu chờ xử lý';
+  document.getElementById('dash-pyc').textContent = remaining;
+  showToast('Cập nhật trạng thái phiếu thành công', 'success');
+}
+
+function phanHoiPhieu(btn) {
+  currentPhanHoiCard = btn.closest('.pyc-card');
+  document.getElementById('phan-hoi-noi-dung').value = '';
+  openModal('modal-phan-hoi');
+}
+
+function guiPhanHoi() {
+  const nd = document.getElementById('phan-hoi-noi-dung').value.trim();
+  if (!nd) { showToast('Vui lòng nhập nội dung phản hồi', 'error'); return; }
+  if (currentPhanHoiCard) {
+    const phanHoiEl = document.createElement('div');
+    phanHoiEl.style.cssText = 'background:#f0fdf4;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.875rem;border-left:3px solid var(--success)';
+    phanHoiEl.innerHTML = `<strong style="color:var(--primary)">Phản hồi từ giảng viên:</strong><br>${nd}`;
+    currentPhanHoiCard.appendChild(phanHoiEl);
+  }
+  closeModal('modal-phan-hoi');
+  showToast('Đã gửi phản hồi tới sinh viên', 'success');
+}
+
+function exportCSV() {
+  const header = 'MSSV,Họ Tên,Lớp SV,Lớp HP,Học Phần,Ngày ĐK,Thanh Toán,Điểm Danh%\n';
+  const rows   = dsSinhVienDangKy.map(sv =>
+    `${sv.mssv},${sv.ten},${sv.lop},${sv.lopHP},${sv.monHoc},${sv.ngayDK},${sv.thanhToan?'Đã TT':'Chưa TT'},${sv.dd}%`
+  ).join('\n');
+  const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'danh_sach_sinh_vien.csv'; a.click();
+  showToast('Xuất CSV thành công!', 'success');
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function showPage(name, navEl) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item-link').forEach(l => l.classList.remove('active'));
+  const t = document.getElementById('page-' + name);
+  if (t) t.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  const titles = {
+    'dashboard':'Dashboard','lop-hoc-phan':'Lớp Học Phần','sinh-vien-dang-ky':'SV Đăng Ký',
+    'diem-danh-qr':'Tạo QR Điểm Danh','quan-ly-dd':'Quản Lý Điểm Danh',
+    'bai-tap':'Quản Lý Bài Tập','nop-bai':'Bài Tập Đã Nộp',
+    'su-kien':'Quản Lý Sự Kiện','phieu-yeu-cau':'Phiếu Yêu Cầu','thong-tin':'Thông Tin Cá Nhân',
+  };
+  document.getElementById('header-title').textContent = titles[name] || 'Dashboard';
+}
+
+function showToast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast-item ${type}`;
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function doLogout() { if (confirm('Đăng xuất?')) window.location.href = 'index.html'; }
+
+(function init() {
+  document.getElementById('today-date').textContent =
+    new Date().toLocaleDateString('vi-VN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('qr-ngay').value = new Date().toISOString().split('T')[0];
+  document.getElementById('bt-han').value  = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
+  document.getElementById('sk-ngay').value = new Date(Date.now() + 14*86400000).toISOString().split('T')[0];
+  renderSVDangKy(dsSinhVienDangKy);
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+  });
+
+  // Load thông tin GV từ localStorage
+  const hoTen = localStorage.getItem('giangVienHoTen') || 'Giảng Viên';
+  const boMon  = localStorage.getItem('giangVienBoMon') || '';
+  const av     = hoTen.split(' ').pop()[0].toUpperCase();
+  document.getElementById('gv-avatar').textContent = av;
+  document.getElementById('gv-name').textContent   = hoTen;
+
+  // Load lớp học phần từ API
+  const gvId = localStorage.getItem('giangVienId');
+  const url  = gvId ? `/api/lop-hoc-phan/giang-vien/${gvId}` : '/api/lop-hoc-phan';
+  fetch(url).then(r => r.json()).then(data => {
+    if (!Array.isArray(data) || data.length === 0) return;
+    const sel1 = document.getElementById('qr-lop-hp');
+    const sel2 = document.getElementById('bt-lop');
+    sel1.innerHTML = '';
+    if (sel2) sel2.innerHTML = '';
+    data.forEach(lhp => {
+      const label = (lhp.hocPhan?.tenHocPhan || 'Lớp') + ' – ' + (lhp.hocKy || '');
+      const opt1  = new Option(label, lhp.id);
+      sel1.appendChild(opt1);
+      if (sel2) sel2.appendChild(new Option(label, lhp.id));
+    });
+  }).catch(() => {});
+})();
+</script>
+</body>
+</html>
