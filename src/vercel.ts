@@ -13,7 +13,7 @@ async function getHandler() {
   const expressApp = app.getHttpAdapter().getInstance();
 
   cachedHandler = serverless(expressApp, {
-    request: (req) => {
+    request: (req: any) => {
       if (typeof req.url === 'string' && req.url.startsWith('/api')) {
         req.url = req.url.replace(/^\/api/, '') || '/';
       }

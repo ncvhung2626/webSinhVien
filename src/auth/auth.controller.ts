@@ -37,19 +37,47 @@ export class AuthController {
     }
   }
 
-  // ── Quên mật khẩu – Bước 1: kiểm tra email ──
-  @Post('api/auth/quen-mat-khau/kiem-tra-email')
+  // ══════════════════════════════════════════════════════
+  //  QUÊN MẬT KHẨU VỚI OTP (3 bước)
+  // ══════════════════════════════════════════════════════
+
+  /**
+   * Bước 1: Kiểm tra email + Tạo OTP → trả về otpCode để frontend gửi email qua EmailJS
+   * POST /api/auth/quen-mat-khau/forgot-password
+   */
+  @Post('api/auth/quen-mat-khau/forgot-password')
   @HttpCode(HttpStatus.OK)
-  async kiemTraEmail(@Body('email') email: string) {
+  async forgotPassword(@Body('email') email: string) {
     try {
-      await this.authService.kiemTraEmail(email);
-      return { success: true };
+      const result = await this.authService.forgotPassword(email);
+      return result;
     } catch (e) {
       return { success: false, message: e.message };
     }
   }
 
-  // ── Quên mật khẩu – Bước 2: đặt lại mật khẩu mới ──
+  /**
+   * Bước 2: Xác thực OTP
+   * POST /api/auth/quen-mat-khau/verify-otp
+   */
+  @Post('api/auth/quen-mat-khau/verify-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyOtp(
+    @Body('email')   email: string,
+    @Body('otpCode') otpCode: string,
+  ) {
+    try {
+      const result = await this.authService.verifyOtp(email, otpCode);
+      return result;
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  /**
+   * Bước 3: Đặt lại mật khẩu mới (sau khi OTP verified)
+   * POST /api/auth/quen-mat-khau/dat-lai
+   */
   @Post('api/auth/quen-mat-khau/dat-lai')
   @HttpCode(HttpStatus.OK)
   async datLaiMatKhau(
@@ -60,8 +88,21 @@ export class AuthController {
       if (!matKhauMoi || matKhauMoi.length < 6) {
         return { success: false, message: 'Mật khẩu phải có ít nhất 6 ký tự' };
       }
-      await this.authService.datLaiMatKhau(email, matKhauMoi);
-      return { success: true };
+      const result = await this.authService.datLaiMatKhauVoiOtp(email, matKhauMoi);
+      return result;
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  }
+
+  // Giữ lại API kiểm tra email cũ (backward compatible)
+  @Post('api/auth/quen-mat-khau/kiem-tra-email')
+  @HttpCode(HttpStatus.OK)
+  async kiemTraEmail(@Body('email') email: string) {
+    try {
+      // Dùng forgotPassword luôn, vì nó cũng kiểm tra email
+      const result = await this.authService.forgotPassword(email);
+      return result;
     } catch (e) {
       return { success: false, message: e.message };
     }

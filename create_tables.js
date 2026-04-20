@@ -38,7 +38,18 @@ async function run() {
     );
   `);
   
-  console.log('Tables created');
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS password_reset_otps (
+      id          SERIAL PRIMARY KEY,
+      user_id     INT NOT NULL REFERENCES nguoi_dung(id) ON DELETE CASCADE,
+      otp_code    VARCHAR(6) NOT NULL,
+      expires_at  TIMESTAMP NOT NULL,
+      is_verified BOOLEAN DEFAULT FALSE,
+      created_at  TIMESTAMP DEFAULT NOW()
+    );
+  `);
+  
+  console.log('Tables created (including password_reset_otps)');
   process.exit(0);
 }
 

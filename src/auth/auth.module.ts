@@ -1,10 +1,11 @@
 import { Module }        from '@nestjs/common';
 import { JwtModule }     from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthController } from './auth.controller';
-import { AuthService }    from './auth.service';
-import { NguoiDung }      from './entities/nguoi-dung.entity';
-import { VaiTro }         from './entities/vai-tro.entity';
+import { AuthController }    from './auth.controller';
+import { AuthService }       from './auth.service';
+import { NguoiDung }         from './entities/nguoi-dung.entity';
+import { VaiTro }            from './entities/vai-tro.entity';
+import { PasswordResetOtp }  from './entities/password-reset-otp.entity';
 
 /*
   MODULE: AuthModule
@@ -37,7 +38,7 @@ import { VaiTro }         from './entities/vai-tro.entity';
 */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([NguoiDung, VaiTro]),
+    TypeOrmModule.forFeature([NguoiDung, VaiTro, PasswordResetOtp]),
     JwtModule.register({
       secret:      process.env.JWT_SECRET || 'qlsv_secret_2025',
       signOptions: { expiresIn: '8h' },

@@ -10,8 +10,8 @@ import { DangKyHocService }  from '../dang-ky-hoc/dang-ky-hoc.service';
 
 @Injectable()
 export class PaymentService {
-  private readonly vnp_TmnCode    = 'ONPNUHYN'; // Force hardcode
-  private readonly vnp_HashSecret = 'KFTXA4QKGLD763WCNQSSQE6RJ84656LB'; // Force hardcode
+  private readonly vnp_TmnCode    = process.env.VNP_TMN_CODE    || 'ONPNUHYN';
+  private readonly vnp_HashSecret = process.env.VNP_HASH_SECRET || 'KFTXA4QKGLD763WCNQSSQE6RJ84656LB';
   private readonly vnp_Url        = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
   private readonly vnp_ReturnUrl  = process.env.VNP_RETURN_URL  || 'http://localhost:3000/api/payment/vnpay-callback';
 
@@ -143,7 +143,7 @@ export class PaymentService {
       vnp_ExpireDate: this.formatDate(expire),
       vnp_IpAddr:     ipAddr,
       vnp_Locale:     'vn',
-      vnp_OrderInfo: 'Thanh+toan+hoc+phi',
+      vnp_OrderInfo:  'Thanh toan hoc phi',
       vnp_OrderType:  'other',
       vnp_ReturnUrl:  this.vnp_ReturnUrl,
       vnp_TmnCode:    this.vnp_TmnCode,
@@ -166,13 +166,25 @@ export class PaymentService {
   }
 
   private sortObject(obj: Record<string, any>): Record<string, string> {
-  return Object.keys(obj)
-    .sort()
-    .reduce((sorted, key) => {
-      sorted[key] = String(obj[key]);
-      return sorted;
-    }, {} as Record<string, string>);
-}
+    const sorted: Record<string, string> = {};
+    const str = [];
+    let key;
+    for (key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        str.push(encodeURIComponent(key));
+      }
+    }
+    str.sort();
+    for (key = 0; key < str.length; key++) {
+      // Decode key again because str[key] is encodeURIComponent version,
+      // but VNPAY standard implementation incorrectly indexes obj[str[key]]!
+      // To strictly follow VNPAY, we use decodeURIComponent or assume keys are alphanumeric.
+      // Since vnp_ keys are alphanumeric, str[key] == key
+      const decodedKey = decodeURIComponent(str[key]);
+      sorted[str[key]] = encodeURIComponent(obj[decodedKey]).replace(/%20/g, '+');
+    }
+    return sorted;
+  }
 
   private formatDate(date: Date): string {
     const pad = (n: number) => String(n).padStart(2, '0');
