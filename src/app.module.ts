@@ -29,17 +29,29 @@ import { AdminSuKienModule }            from './api-admin/su-kien/su-kien.module
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
-    TypeOrmModule.forRoot({
-      type:             'postgres',
-      url:              process.env.DATABASE_URL, // Ưu tiên dùng URL (Railway, Vercel, v.v.)
-      host:             process.env.DB_HOST  || 'localhost',
-      port:             +process.env.DB_PORT || 5432,
-      username:         process.env.DB_USER  || 'postgres',
-      password:         process.env.DB_PASS  || 'Ncvhung@2626',
-      database:         process.env.DB_NAME  || 'quan_li_sv',
-      autoLoadEntities: true,
-      synchronize:      false,
-      ssl:              process.env.DATABASE_URL ? { rejectUnauthorized: false } : false, // Bật SSL nếu dùng DATABASE_URL
+    TypeOrmModule.forRootAsync({
+      useFactory: () => {
+        const url = process.env.DATABASE_URL;
+        if (url) {
+          return {
+            type:             'postgres',
+            url:              url,
+            autoLoadEntities: true,
+            synchronize:      false,
+            ssl:              { rejectUnauthorized: false },
+          };
+        }
+        return {
+          type:             'postgres',
+          host:             process.env.DB_HOST  || 'localhost',
+          port:             +process.env.DB_PORT || 5432,
+          username:         process.env.DB_USER  || 'postgres',
+          password:         process.env.DB_PASS  || 'Ncvhung@2626',
+          database:         process.env.DB_NAME  || 'quan_li_sv',
+          autoLoadEntities: true,
+          synchronize:      false,
+        };
+      },
     }),
 
     // User modules
