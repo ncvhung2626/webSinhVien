@@ -53,3 +53,5 @@ Hệ thống quản lý sinh viên được xây dựng dựa trên kiến trúc
 
 ## 📄 Giấy phép
 Dự án được phát triển phục vụ mục đích học tập.
+
+postgresql://postgres:psRfUNWQtEUyNatpyHKQKdiZDLSGySPZ@crossover.proxy.rlwy.net:35542/railway
