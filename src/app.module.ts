@@ -37,7 +37,7 @@ import { AdminSuKienModule }            from './api-admin/su-kien/su-kien.module
             type:             'postgres',
             url:              url,
             autoLoadEntities: true,
-            synchronize:      true,
+            synchronize:      false,
             ssl:              { rejectUnauthorized: false },
           };
         }
