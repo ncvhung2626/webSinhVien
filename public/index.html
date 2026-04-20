@@ -529,6 +529,7 @@
               localStorage.setItem('giangVienId', String(gv.id));
               localStorage.setItem('giangVienHoTen', gv.hoTen || '');
               localStorage.setItem('giangVienBoMon', gv.boMon || '');
+              localStorage.setItem('giangVienEmail', gv.nguoiDung?.email || '');
             }
           } catch (e) { }
           window.location.href = '/giang-vien';
@@ -540,6 +541,7 @@
               localStorage.setItem('sinhVienHoTen', sv.hoTen || '');
               localStorage.setItem('sinhVienMssv', sv.mssv || '');
               localStorage.setItem('sinhVienLop', sv.lop || '');
+              localStorage.setItem('sinhVienEmail', sv.nguoiDung?.email || '');
             }
           } catch (e) { }
           window.location.href = '/sinh-vien';

@@ -33,7 +33,10 @@ export class SinhVienService {
   }
 
   findByNguoiDung(nguoiDungId: number): Promise<SinhVien> {
-    return this.repo.findOne({ where: { nguoiDungId } });
+    return this.repo.findOne({
+      where: { nguoiDungId },
+      relations: ['nguoiDung'],
+    });
   }
 
   create(dto: CreateSinhVienDto): Promise<SinhVien> {

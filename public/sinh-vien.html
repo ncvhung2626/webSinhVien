@@ -454,8 +454,8 @@
     <div class="section-title">Thông Tin Cá Nhân</div>
     <p class="section-sub">Xem thông tin sinh viên của bạn</p>
     <div class="row g-3">
-      <div class="col-md-4"><div class="content-card text-center" style="padding:30px 20px"><div style="width:90px;height:90px;border-radius:50%;background:var(--primary);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:800;color:#fff">NV</div><div style="font-size:1.1rem;font-weight:800">Nguyễn Văn A</div><div style="font-size:.85rem;color:var(--text-muted);margin-top:4px">MSSV: SV001</div><div class="mt-3"><span class="badge-custom badge-success">Đang học</span></div></div></div>
-      <div class="col-md-8"><div class="content-card"><div class="content-card-header"><h5>📋 Chi Tiết</h5></div><div class="content-card-body"><div class="row g-3"><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">HỌ TÊN</label><div style="font-weight:600">Nguyễn Văn A</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">MSSV</label><div style="font-weight:600;font-family:'JetBrains Mono'">SV001</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">LỚP</label><div style="font-weight:600">CNTT22A</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">EMAIL</label><div style="font-weight:600">nguyenvana@student.edu.vn</div></div></div></div></div></div>
+      <div class="col-md-4"><div class="content-card text-center" style="padding:30px 20px"><div style="width:90px;height:90px;border-radius:50%;background:var(--primary);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:800;color:#fff" id="prof-avatar">NV</div><div style="font-size:1.1rem;font-weight:800" id="prof-name">Nguyễn Văn A</div><div style="font-size:.85rem;color:var(--text-muted);margin-top:4px" id="prof-mssv">MSSV: SV001</div><div class="mt-3"><span class="badge-custom badge-success">Đang học</span></div></div></div>
+      <div class="col-md-8"><div class="content-card"><div class="content-card-header"><h5>📋 Chi Tiết</h5></div><div class="content-card-body"><div class="row g-3"><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">HỌ TÊN</label><div style="font-weight:600" id="detail-ho-ten">Nguyễn Văn A</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">MSSV</label><div style="font-weight:600;font-family:'JetBrains Mono'" id="detail-mssv">SV001</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">LỚP</label><div style="font-weight:600" id="detail-lop">CNTT22A</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">EMAIL</label><div style="font-weight:600" id="detail-email">nguyenvana@student.edu.vn</div></div></div></div></div></div>
     </div>
   </section>
 
@@ -961,6 +961,7 @@ function doLogout() { if (confirm('Bạn có chắc muốn đăng xuất?')) win
   const hoTen = localStorage.getItem('sinhVienHoTen') || 'Sinh Viên';
   const mssv  = localStorage.getItem('sinhVienMssv')  || '---';
   const lop   = localStorage.getItem('sinhVienLop')   || '---';
+  const email = localStorage.getItem('sinhVienEmail') || '---';
   const avatar = hoTen.split(' ').pop()[0].toUpperCase();
 
   document.getElementById('sv-avatar').textContent   = avatar;
@@ -968,6 +969,15 @@ function doLogout() { if (confirm('Bạn có chắc muốn đăng xuất?')) win
   document.getElementById('sv-mssv').textContent     = mssv + ' · ' + lop;
   document.getElementById('sv-greeting').textContent = hoTen;
   document.getElementById('nop-mssv').value          = mssv;
+
+  // Profile section
+  if (document.getElementById('prof-avatar')) document.getElementById('prof-avatar').textContent = avatar;
+  if (document.getElementById('prof-name'))   document.getElementById('prof-name').textContent   = hoTen;
+  if (document.getElementById('prof-mssv'))   document.getElementById('prof-mssv').textContent   = 'MSSV: ' + mssv;
+  if (document.getElementById('detail-ho-ten')) document.getElementById('detail-ho-ten').textContent = hoTen;
+  if (document.getElementById('detail-mssv'))   document.getElementById('detail-mssv').textContent   = mssv;
+  if (document.getElementById('detail-lop'))    document.getElementById('detail-lop').textContent    = lop;
+  if (document.getElementById('detail-email'))  document.getElementById('detail-email').textContent  = email;
 
   loadDanhSachHocPhan();
   document.querySelectorAll('.modal-overlay, .payment-modal-overlay').forEach(el => {

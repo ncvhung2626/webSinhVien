@@ -482,8 +482,8 @@
     <div class="section-title">Thông Tin Cá Nhân</div>
     <p class="section-sub">Thông tin giảng viên trong hệ thống</p>
     <div class="row g-3">
-      <div class="col-md-4"><div class="content-card text-center" style="padding:30px 20px"><div style="width:90px;height:90px;border-radius:50%;background:var(--primary);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:#fff">TM</div><div style="font-size:1.1rem;font-weight:800">TS. Trần Minh</div><div style="font-size:.85rem;color:var(--text-muted);margin-top:4px">Bộ môn CNTT</div><div class="mt-3"><span class="badge-custom badge-success">Đang giảng dạy</span></div></div></div>
-      <div class="col-md-8"><div class="content-card"><div class="content-card-header"><h5>📋 Thông Tin Chi Tiết</h5></div><div class="content-card-body"><div class="row g-3"><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">HỌ TÊN</label><div style="font-weight:600">TS. Trần Minh</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">BỘ MÔN</label><div style="font-weight:600">Công nghệ Thông tin</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">EMAIL</label><div style="font-weight:600"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="621610030c0f0b0c0a220706174c140c">[email&#160;protected]</a></div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">SĐT</label><div style="font-weight:600">0901 234 567</div></div></div></div></div></div>
+      <div class="col-md-4"><div class="content-card text-center" style="padding:30px 20px"><div style="width:90px;height:90px;border-radius:50%;background:var(--primary);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:#fff" id="prof-gv-avatar">TM</div><div style="font-size:1.1rem;font-weight:800" id="prof-gv-name">TS. Trần Minh</div><div style="font-size:.85rem;color:var(--text-muted);margin-top:4px" id="prof-gv-bomon">Bộ môn CNTT</div><div class="mt-3"><span class="badge-custom badge-success">Đang giảng dạy</span></div></div></div>
+      <div class="col-md-8"><div class="content-card"><div class="content-card-header"><h5>📋 Thông Tin Chi Tiết</h5></div><div class="content-card-body"><div class="row g-3"><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">HỌ TÊN</label><div style="font-weight:600" id="detail-gv-ho-ten">TS. Trần Minh</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">BỘ MÔN</label><div style="font-weight:600" id="detail-gv-bomon">Công nghệ Thông tin</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">EMAIL</label><div style="font-weight:600" id="detail-gv-email">tranminh@edu.vn</div></div><div class="col-6"><label style="font-size:.78rem;font-weight:700;color:var(--text-muted)">SĐT</label><div style="font-weight:600">0901 234 567</div></div></div></div></div></div>
     </div>
   </section>
 
@@ -985,10 +985,20 @@ function doLogout() { if (confirm('Đăng xuất?')) window.location.href = 'ind
 
   // Load thông tin GV từ localStorage
   const hoTen = localStorage.getItem('giangVienHoTen') || 'Giảng Viên';
-  const boMon  = localStorage.getItem('giangVienBoMon') || '';
-  const av     = hoTen.split(' ').pop()[0].toUpperCase();
+  const boMon = localStorage.getItem('giangVienBoMon') || 'Công nghệ Thông tin';
+  const email = localStorage.getItem('giangVienEmail') || '---';
+  const av    = hoTen.split(' ').pop()[0].toUpperCase();
+
   document.getElementById('gv-avatar').textContent = av;
   document.getElementById('gv-name').textContent   = hoTen;
+
+  // Profile section
+  if (document.getElementById('prof-gv-avatar')) document.getElementById('prof-gv-avatar').textContent = av;
+  if (document.getElementById('prof-gv-name'))   document.getElementById('prof-gv-name').textContent   = hoTen;
+  if (document.getElementById('prof-gv-bomon'))  document.getElementById('prof-gv-bomon').textContent  = boMon;
+  if (document.getElementById('detail-gv-ho-ten')) document.getElementById('detail-gv-ho-ten').textContent = hoTen;
+  if (document.getElementById('detail-gv-bomon'))  document.getElementById('detail-gv-bomon').textContent  = boMon;
+  if (document.getElementById('detail-gv-email'))  document.getElementById('detail-gv-email').textContent  = email;
 
   // Load lớp học phần từ API
   const gvId = localStorage.getItem('giangVienId');
