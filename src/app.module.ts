@@ -31,6 +31,7 @@ import { AdminSuKienModule }            from './api-admin/su-kien/su-kien.module
 
     TypeOrmModule.forRoot({
       type:             'postgres',
+      url:              process.env.DATABASE_URL, // Ưu tiên dùng URL (Railway, Vercel, v.v.)
       host:             process.env.DB_HOST  || 'localhost',
       port:             +process.env.DB_PORT || 5432,
       username:         process.env.DB_USER  || 'postgres',
@@ -38,6 +39,7 @@ import { AdminSuKienModule }            from './api-admin/su-kien/su-kien.module
       database:         process.env.DB_NAME  || 'quan_li_sv',
       autoLoadEntities: true,
       synchronize:      false,
+      ssl:              process.env.DATABASE_URL ? { rejectUnauthorized: false } : false, // Bật SSL nếu dùng DATABASE_URL
     }),
 
     // User modules
