@@ -10,8 +10,8 @@ import { DangKyHocService }  from '../dang-ky-hoc/dang-ky-hoc.service';
 
 @Injectable()
 export class PaymentService {
-  private readonly vnp_TmnCode    = process.env.VNP_TMN_CODE    || 'ONPNUHYN';
-  private readonly vnp_HashSecret = process.env.VNP_HASH_SECRET || 'KFTXA4QKGLD763WCNQSSQE6RJ84656LB';
+  private readonly vnp_TmnCode    = process.env.VNP_TMN_CODE    || 'DV0LO45L';
+  private readonly vnp_HashSecret = process.env.VNP_HASH_SECRET || 'IDHXHU78WQG0P05J15F5TNSFM9O8UI2M';
   private readonly vnp_Url        = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
   private readonly vnp_ReturnUrl  = process.env.VNP_RETURN_URL  || 'http://localhost:3000/api/payment/vnpay-callback';
 
