@@ -37,7 +37,7 @@ import { AdminSuKienModule }            from './api-admin/su-kien/su-kien.module
             type:             'postgres',
             url:              url,
             autoLoadEntities: true,
-            synchronize:      true,
+            synchronize:      false,
             ssl:              { rejectUnauthorized: false },
           };
         }
@@ -49,7 +49,7 @@ import { AdminSuKienModule }            from './api-admin/su-kien/su-kien.module
           password:         process.env.DB_PASS  || 'Ncvhung@2626',
           database:         process.env.DB_NAME  || 'quan_li_sv',
           autoLoadEntities: true,
-          synchronize:      true,
+          synchronize:      false,
         };
       },
     }),
